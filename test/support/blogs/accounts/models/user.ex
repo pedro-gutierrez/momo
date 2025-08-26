@@ -8,6 +8,6 @@ defmodule Blogs.Accounts.User do
 
     unique fields: [:email]
 
-    has_many Blogs.Accounts.Credential
+    has_many Blogs.Accounts.Credential, preloaded: true
   end
 end

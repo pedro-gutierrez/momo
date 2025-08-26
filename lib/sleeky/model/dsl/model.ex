@@ -9,6 +9,5 @@ defmodule Sleeky.Model.Dsl.Model do
     child :has_many, min: 0
     child :key, min: 0
     child :unique, min: 0
-    child :action, min: 0
   end
 end

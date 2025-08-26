@@ -5,7 +5,6 @@ defmodule Sleeky.Query do
     dsl: Sleeky.Query.Dsl,
     parser: Sleeky.Query.Parser,
     generators: [
-      Sleeky.Query.Generator.Apply,
       Sleeky.Query.Generator.Execute,
       Sleeky.Query.Generator.Handle,
       Sleeky.Query.Generator.Metadata,
@@ -108,8 +107,9 @@ defmodule Sleeky.Query do
       else
         context
         |> query.scope()
-        |> query.apply_filters(params)
-        |> query.apply_sorting()
+        |> apply_filters(query, params)
+        |> apply_preloads(query)
+        |> apply_sorting(query)
         |> query.handle(params, context)
         |> call_repo(query, context)
       end
@@ -128,7 +128,8 @@ defmodule Sleeky.Query do
     else
       context
       |> query.scope()
-      |> query.apply_sorting()
+      |> apply_preloads(query)
+      |> apply_sorting(query)
       |> query.handle(context)
       |> call_repo(query, context)
     end
@@ -166,7 +167,7 @@ defmodule Sleeky.Query do
   @doc """
   Builds a query by taking the parameters and adding them as filters
   """
-  def apply_filters(_query, q, params) do
+  def apply_filters(q, _query, params) do
     filters =
       for {field, value} <- plain_map(params) do
         {field, :eq, value}
@@ -178,12 +179,24 @@ defmodule Sleeky.Query do
   @doc """
   Applies sorting to the query
   """
-  def apply_sorting(query, q) do
+  def apply_sorting(q, query) do
     sorting =
       for %{field: field, direction: direction} <- query.sorting() do
         {field, direction}
       end
 
     QueryBuilder.sort(q, sorting)
+  end
+
+  @doc """
+  Applies preloads to the query
+  """
+  def apply_preloads(q, query) do
+    preload =
+      query.model().relations()
+      |> Enum.filter(& &1.preloaded?)
+      |> Enum.map(& &1.name)
+
+    from(item in q, preload: ^preload)
   end
 end

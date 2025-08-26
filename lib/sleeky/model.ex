@@ -88,6 +88,7 @@ defmodule Sleeky.Model do
       virtual?: false,
       computed?: false,
       mutable?: true,
+      preloaded?: false,
       aliases: []
     ]
   end

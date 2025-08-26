@@ -84,7 +84,7 @@ defmodule Sleeky.FeatureTest do
     end
 
     test "applies scopes" do
-      {:ok, foo} =
+      {:ok, _} =
         Accounts.User.create(
           id: uuid(),
           email: "foo@bar",
@@ -101,7 +101,8 @@ defmodule Sleeky.FeatureTest do
         )
 
       context = %{current_user: %{roles: [:guest]}}
-      assert [^foo] = Accounts.get_users(context)
+      assert [foo] = Accounts.get_users(context)
+      assert foo.email == "foo@bar"
     end
 
     test "return validation errors on parameters" do
@@ -131,7 +132,8 @@ defmodule Sleeky.FeatureTest do
       params = %{"email" => foo.email}
       context = %{current_user: %{roles: [:user]}}
 
-      assert {:ok, ^foo} = Accounts.get_user_by_email(params, context)
+      assert {:ok, foo} = Accounts.get_user_by_email(params, context)
+      assert foo.email == "foo@bar"
     end
 
     test "returns an error if the item is not found" do
@@ -161,6 +163,22 @@ defmodule Sleeky.FeatureTest do
       assert {:ok, o2} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 3)
 
       assert [^o2, ^o1] = Accounts.get_onboardings()
+    end
+
+    test "preloads associations by default" do
+      {:ok, user} =
+        Accounts.User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      params = %{"email" => user.email}
+      context = %{current_user: %{roles: [:user]}}
+
+      assert {:ok, user} = Accounts.get_user_by_email(params, context)
+      assert user.credentials == []
     end
 
     test "support lists of strings as parameters" do

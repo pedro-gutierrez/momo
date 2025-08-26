@@ -43,6 +43,7 @@ defmodule Sleeky.Model.Generator.Metadata do
       def parents, do: @parents
       def children, do: @children
       def attributes, do: @attributes
+      def relations, do: @parents ++ @children
       def keys, do: @keys
       def fields, do: @fields
       def actions, do: @actions
