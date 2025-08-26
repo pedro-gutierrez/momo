@@ -8,13 +8,5 @@ defmodule Blogs.Publishing.Theme do
     unique fields: [:name] do
       on_conflict strategy: :merge
     end
-
-    action :create do
-      role :guest
-    end
-
-    action :list do
-      role :guest
-    end
   end
 end

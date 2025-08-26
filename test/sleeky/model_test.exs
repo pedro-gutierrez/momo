@@ -4,6 +4,7 @@ defmodule Sleeky.ModelTest do
   alias Blogs.Accounts
   alias Blogs.Accounts.User
   alias Blogs.Accounts.Onboarding
+  alias Blogs.Accounts.Credential
 
   describe "describe field/1" do
     test "finds built-in fields" do
@@ -119,6 +120,38 @@ defmodule Sleeky.ModelTest do
 
       assert [onboarding] = Accounts.get_onboardings()
       assert onboarding.steps_pending == 3
+    end
+  end
+
+  describe "read functions" do
+    test "preload children relation when the option is set" do
+      assert {:ok, user} =
+               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+
+      assert {:ok, user} = User.fetch(user.id)
+      assert user.credentials == []
+
+      assert [user] = User.list()
+      assert user.credentials == []
+    end
+
+    test "do not preload relations by default" do
+      assert {:ok, user} =
+               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+
+      assert {:ok, credential} =
+               Accounts.create_credential(
+                 user: user,
+                 name: "password",
+                 value: "bar",
+                 enabled: false
+               )
+
+      assert {:ok, credential} = Credential.fetch(credential.id)
+      refute Ecto.assoc_loaded?(credential.user)
+
+      assert [credential] = Credential.list()
+      refute Ecto.assoc_loaded?(credential.user)
     end
   end
 end

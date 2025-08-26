@@ -81,10 +81,12 @@ defmodule Sleeky.Model.Parser do
 
   defp with_parents(model, definition) do
     rels =
-      for opts <- children_tags(definition, :belongs_to) do
-        parent_module = Keyword.fetch!(opts, :name)
+      for {:belongs_to, attrs, children} <- definition do
+        parent_module = relation_target_module(attrs, children)
+        preloaded = Keyword.get(attrs, :preloaded, false)
+
         ensure_same_feature!(model.module, parent_module, :belongs_to)
-        required = Keyword.get(opts, :required, true)
+        required = Keyword.get(attrs, :required, true)
 
         name = name(parent_module)
         table_name = table_name(parent_module)
@@ -106,7 +108,8 @@ defmodule Sleeky.Model.Parser do
           column_name: column_name,
           storage: storage,
           target: summary_model(parent_module),
-          aliases: [name]
+          aliases: [name],
+          preloaded?: preloaded
         }
 
         foreign_key_name = String.to_atom("#{model.table_name}_#{column_name}_fkey")
@@ -119,7 +122,10 @@ defmodule Sleeky.Model.Parser do
 
   defp with_children(model, definition) do
     rels =
-      for {:has_many, [], [child_module]} <- definition do
+      for {:has_many, attrs, children} <- definition do
+        child_module = relation_target_module(attrs, children)
+        preloaded = Keyword.get(attrs, :preloaded, false)
+
         ensure_same_feature!(model.module, child_module, :has_many)
 
         name = plural(child_module)
@@ -143,12 +149,16 @@ defmodule Sleeky.Model.Parser do
           kind: :child,
           model: model.module,
           inverse: inverse,
-          target: summary_model(child_module)
+          target: summary_model(child_module),
+          preloaded?: preloaded
         }
       end
 
     %{model | relations: model.relations ++ rels}
   end
+
+  defp relation_target_module(_attrs, [module]), do: module
+  defp relation_target_module(attrs, []), do: Keyword.fetch!(attrs, :name)
 
   defp fields!(model, field_names) do
     fields = model.attributes ++ model.relations
@@ -353,20 +363,5 @@ defmodule Sleeky.Model.Parser do
       plural: plural(module),
       feature: feature(module)
     }
-  end
-
-  defp children_tags(definition, tag_name) do
-    definition
-    |> Enum.map(fn
-      {^tag_name, [], [parent_module]} ->
-        [name: parent_module, required: true]
-
-      {^tag_name, opts, _} ->
-        opts
-
-      _ ->
-        nil
-    end)
-    |> Enum.reject(&is_nil/1)
   end
 end

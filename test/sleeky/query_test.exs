@@ -11,6 +11,8 @@ defmodule Sleeky.QueryTest do
     GetUserIds
   }
 
+  alias Sleeky.Query
+
   describe "scope/1" do
     test "does not scope the query, if no policies are defined" do
       context = %{}
@@ -73,7 +75,7 @@ defmodule Sleeky.QueryTest do
   describe "apply_filters/2" do
     test "maps multivalued values to filters using the in operator" do
       params = %{email: ["a@b.com", "a@c.com"]}
-      query = GetUsersByEmails.apply_filters(User, params)
+      query = Query.apply_filters(User, GetUsersByEmails, params)
       sql = to_sql(query)
 
       assert sql =~ "WHERE (u0.\"email\" = ANY($1))"

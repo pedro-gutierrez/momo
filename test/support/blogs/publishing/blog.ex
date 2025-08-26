@@ -12,25 +12,5 @@ defmodule Blogs.Publishing.Blog do
     belongs_to Theme, required: false
     has_many Post
     unique fields: [:author, :name]
-
-    action :read do
-      role :user
-    end
-
-    action :create do
-      role :user, scope: :author
-    end
-
-    action :list do
-      role :user, scope: :author
-    end
-
-    action :update do
-      role :user, scope: :author
-    end
-
-    action :delete do
-      role :user, scope: :author
-    end
   end
 end
