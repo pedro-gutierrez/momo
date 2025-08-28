@@ -183,6 +183,23 @@ defmodule Momo.Ui.ViewTest do
     end
   end
 
+  defmodule SpinnerView do
+    use Momo.Ui.View
+
+    view do
+      span "aria-busy": "{{ busy }}" do
+      end
+    end
+  end
+
+  defmodule CheckboxView do
+    use Momo.Ui.View
+
+    view do
+      input type: "checkbox", checked: "{{ checked }}"
+    end
+  end
+
   describe "html" do
     test "renders liquid variables" do
       params = %{"title" => "Foo", "myClass" => "bar"}
@@ -267,6 +284,16 @@ defmodule Momo.Ui.ViewTest do
     test "supports if conditionals inside components" do
       assert "<p>Visible</p>" == IfViewAsComponentView.render(%{"visible" => true})
       assert "<span></span>" == IfViewAsComponentView.render(%{"visible" => false})
+    end
+
+    test "renders aria attribute values as strings" do
+      assert "<span aria-busy=\"true\"></span>" == SpinnerView.render(%{"busy" => "true"})
+      assert "<span aria-busy=\"false\"></span>" == SpinnerView.render(%{"busy" => "false"})
+    end
+
+    test "renders checkboxes attributes without values" do
+      assert "<input type=\"checkbox\" checked>" == CheckboxView.render(%{"checked" => true})
+      assert "<input type=\"checkbox\" >" == CheckboxView.render(%{"checked" => false})
     end
   end
 end
