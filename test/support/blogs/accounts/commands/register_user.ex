@@ -1,7 +1,7 @@
 defmodule Blogs.Accounts.Commands.RegisterUser do
   @moduledoc false
 
-  use Sleeky.Command
+  use Momo.Command
 
   alias Blogs.Accounts.User
   alias Blogs.Accounts.Events.UserRegistered

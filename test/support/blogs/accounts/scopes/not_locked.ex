@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Scopes.NotLocked do
   @moduledoc false
-  use Sleeky.Scope
+  use Momo.Scope
 
   scope do
     is_false do

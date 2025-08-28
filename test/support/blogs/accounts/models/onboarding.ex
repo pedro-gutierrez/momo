@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Onboarding do
   @moduledoc false
-  use Sleeky.Model
+  use Momo.Model
 
   model do
     attribute :user_id, kind: :id, required: true

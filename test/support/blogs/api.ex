@@ -1,6 +1,6 @@
 defmodule Blogs.Api do
   @moduledoc false
-  use Sleeky.Api
+  use Momo.Api
 
   api do
     plugs do

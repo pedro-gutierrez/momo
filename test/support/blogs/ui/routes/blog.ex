@@ -1,6 +1,6 @@
 defmodule Blogs.Ui.Routes.Blog do
   @moduledoc false
-  use Sleeky.Ui.Route
+  use Momo.Ui.Route
 
   route "/blogs", action: Blogs.Ui.Actions.Blog do
     view Blogs.Ui.Views.Blog

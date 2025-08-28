@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Scopes.IsPublic do
   @moduledoc false
-  use Sleeky.Scope
+  use Momo.Scope
 
   scope do
     is_true do

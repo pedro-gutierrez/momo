@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Flows.Onboarding do
   @moduledoc false
-  use Sleeky.Flow
+  use Momo.Flow
 
   alias Blogs.Accounts.Commands.SendWelcomeEmail
   alias Blogs.Accounts.Commands.EnableUser

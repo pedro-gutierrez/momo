@@ -1,12 +1,12 @@
-defmodule Mix.Tasks.Sleeky.Gen.Migrations do
+defmodule Mix.Tasks.Momo.Gen.Migrations do
   @moduledoc """
   A Mix task that generates all Ecto migrations for your schema
   """
 
   use Mix.Task
 
-  alias Sleeky.Migrations
-  alias Sleeky.Migrations.Migration
+  alias Momo.Migrations
+  alias Momo.Migrations.Migration
 
   @shortdoc """
   A Mix task that generates all Ecto migrations for your schema
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Sleeky.Gen.Migrations do
 
   @impl true
   def run(_) do
-    config = Application.fetch_env!(:sleeky, Sleeky)
+    config = Application.fetch_env!(:momo, Momo)
     repo = Keyword.fetch!(config, :repo)
     app = Keyword.fetch!(config, :app)
     migrations_dir = Mix.EctoSQL.source_repo_priv(repo)

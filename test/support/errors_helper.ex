@@ -1,4 +1,4 @@
-defmodule Sleeky.ErrorsHelper do
+defmodule Momo.ErrorsHelper do
   @moduledoc false
 
   @doc """

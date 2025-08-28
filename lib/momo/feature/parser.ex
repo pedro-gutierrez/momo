@@ -1,0 +1,34 @@
+defmodule Momo.Feature.Parser do
+  @moduledoc false
+  @behaviour Diesel.Parser
+
+  alias Momo.Feature
+  import Momo.Naming
+
+  @impl true
+  def parse({:feature, _, children}, opts) do
+    caller_module = Keyword.fetch!(opts, :caller_module)
+    name = name(caller_module)
+    repo = repo(caller_module)
+    app = app(caller_module)
+
+    %Feature{name: name, repo: repo, app: app}
+    |> with_modules(children, :scopes)
+    |> with_modules(children, :models)
+    |> with_modules(children, :commands)
+    |> with_modules(children, :handlers)
+    |> with_modules(children, :queries)
+    |> with_modules(children, :events)
+    |> with_modules(children, :flows)
+    |> with_modules(children, :subscriptions)
+    |> with_modules(children, :mappings)
+    |> with_modules(children, :values)
+  end
+
+  defp with_modules(feature, children, kind) do
+    mods = for {^kind, _, mods} <- children, do: mods
+    mods = List.flatten(mods)
+
+    Map.put(feature, kind, mods)
+  end
+end

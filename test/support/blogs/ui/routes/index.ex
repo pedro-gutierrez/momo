@@ -1,6 +1,6 @@
 defmodule Blogs.Ui.Routes.Index do
   @moduledoc false
-  use Sleeky.Ui.Route
+  use Momo.Ui.Route
 
   route "/"
 end

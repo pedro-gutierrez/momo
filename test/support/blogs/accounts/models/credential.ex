@@ -1,5 +1,5 @@
 defmodule Blogs.Accounts.Credential do
-  use Sleeky.Model
+  use Momo.Model
 
   model do
     attribute :name, kind: :string

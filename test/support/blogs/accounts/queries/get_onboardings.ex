@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Queries.GetOnboardings do
   @moduledoc false
-  use Sleeky.Query
+  use Momo.Query
 
   alias Blogs.Accounts.Onboarding
 

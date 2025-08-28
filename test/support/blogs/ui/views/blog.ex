@@ -1,6 +1,6 @@
 defmodule Blogs.Ui.Views.Blog do
   @moduledoc false
-  use Sleeky.Ui.View
+  use Momo.Ui.View
 
   view do
     html do

@@ -1,6 +1,6 @@
 defmodule Blogs.Notifications do
   @moduledoc false
-  use Sleeky.Feature
+  use Momo.Feature
 
   feature do
     models do

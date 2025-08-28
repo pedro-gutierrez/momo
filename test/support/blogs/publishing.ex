@@ -1,6 +1,6 @@
 defmodule Blogs.Publishing do
   @moduledoc false
-  use Sleeky.Feature
+  use Momo.Feature
 
   feature do
     scopes do

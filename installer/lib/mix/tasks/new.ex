@@ -1,12 +1,12 @@
-defmodule Mix.Tasks.Sleeky.New do
-  @shortdoc "Creates a new Sleeky project"
+defmodule Mix.Tasks.Momo.New do
+  @shortdoc "Creates a new Momo project"
 
   @moduledoc """
-  Creates a new Sleeky project.
+  Creates a new Momo project.
 
   It expects the path of the project as argument.
 
-      mix sleeky.new PATH [--app APP] [--module MODULE]
+      mix momo.new PATH [--app APP] [--module MODULE]
 
   A project at the given PATH will be created. The
   application name and module name will be retrieved
@@ -20,11 +20,11 @@ defmodule Mix.Tasks.Sleeky.New do
 
   ## Examples
 
-      mix sleeky.new hello_world
+      mix momo.new hello_world
 
   Is equivalent to:
 
-      mix sleeky.new hello_world --module HelloWorld
+      mix momo.new hello_world --module HelloWorld
   """
   use Mix.Task
 
@@ -113,7 +113,7 @@ defmodule Mix.Tasks.Sleeky.New do
     create_directory("priv/repo/migrations")
 
     """
-    Your Sleeky project was created successfully.
+    Your Momo project was created successfully.
 
     This generator relies on Direnv, so make sure you run "direnv allow" in order
     to setup your environment.
@@ -126,7 +126,7 @@ defmodule Mix.Tasks.Sleeky.New do
     Then initialise your database:
 
         createuser #{app} -d
-        mix sleeky.gen.migrations
+        mix momo.gen.migrations
         mix ecto.create
         mix ecto.migrate
 
@@ -244,7 +244,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:formatter, """
   [
     inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"],
-    import_deps: [:sleeky]
+    import_deps: [:momo]
   ]
   """)
 
@@ -325,7 +325,7 @@ defmodule Mix.Tasks.Sleeky.New do
     # Run "mix help compile.app" to learn about applications.
     def application do
       [
-        extra_applications: [:logger, :sleeky],
+        extra_applications: [:logger, :momo],
         mod: {<%= @mod %>.Application, []}
       ]
     end
@@ -336,7 +336,7 @@ defmodule Mix.Tasks.Sleeky.New do
         {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.14", only: [:test]},
-        {:sleeky, git: "https://github.com/pedro-gutierrez/sleeky.git"}
+        {:momo, git: "https://github.com/pedro-gutierrez/momo.git"}
       ]
     end
   end
@@ -379,7 +379,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_repo, """
   defmodule <%= @mod %>.Repo do
     @moduledoc false
-    use Sleeky.Repo, otp_app: :<%= @app %>
+    use Momo.Repo, otp_app: :<%= @app %>
   end
   """)
 
@@ -405,7 +405,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_authorization, """
   defmodule <%= @mod %>.Authorization do
     @moduledoc "Defines authorization rules"
-    use Sleeky.Scopes
+    use Momo.Scopes
 
     authorization roles: "subject.roles" do
       scope :self do
@@ -447,7 +447,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_endpoint, """
   defmodule <%= @mod %>.Endpoint do
     @moduledoc false
-    use Sleeky.Endpoint, otp_app: :<%= @app %>
+    use Momo.Endpoint, otp_app: :<%= @app %>
 
     endpoint do
       mount <%= @mod %>.Api, at: "/api"
@@ -459,7 +459,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_api, """
   defmodule <%= @mod %>.Api do
     @moduledoc false
-    use Sleeky.Api
+    use Momo.Api
 
     api do
       plugs do
@@ -476,7 +476,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_ui, """
   defmodule <%= @mod %>.Ui do
     @moduledoc false
-    use Sleeky.Ui
+    use Momo.Ui
 
     ui do
       page <%= @mod %>.Ui.Index
@@ -487,7 +487,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_ui_index, """
   defmodule <%= @mod %>.Ui.Index do
     @moduledoc false
-    use Sleeky.View
+    use Momo.View
 
     view do
       html do
@@ -507,7 +507,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_accounts, """
   defmodule <%= @mod %>.Accounts do
     @moduledoc false
-    use Sleeky.Feature
+    use Momo.Feature
 
     feature do
       authorization <%= @mod %>.Authorization
@@ -521,7 +521,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_accounts_user, """
   defmodule <%= @mod %>.Accounts.User do
     @moduledoc false
-    use Sleeky.Model
+    use Momo.Model
 
     model do
       attribute :email, kind: :string
@@ -552,7 +552,7 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_ui, """
   defmodule <%= @mod %>.Ui do
     @moduledoc false
-    use Sleeky.Ui
+    use Momo.Ui
 
     view <%= @mod %>.Ui.Index
   end
@@ -561,18 +561,18 @@ defmodule Mix.Tasks.Sleeky.New do
   embed_template(:lib_ui_index, """
   defmodule <%= @mod %>.Ui.Index do
     @moduledoc false
-    use Sleeky.Ui.View
+    use Momo.Ui.View
 
     render do
       html do
         head do
           meta charset: "utf-8"
-          title "Welcome to Sleeky"
+          title "Welcome to Momo"
         end
 
         body do
           h1 do
-            "Welcome to Sleeky!"
+            "Welcome to Momo!"
           end
 
           p do
@@ -589,7 +589,7 @@ defmodule Mix.Tasks.Sleeky.New do
 
   config :<%= @app %>, ecto_repos: [<%= @mod %>.Repo]
 
-  config :sleeky, Sleeky,
+  config :momo, Momo,
     repo: <%= @mod %>.Repo,
     endpoint: <%= @mod %>.Endpoint,
     features: [
@@ -651,7 +651,7 @@ defmodule Mix.Tasks.Sleeky.New do
     @moduledoc "A base template for all test cases"
 
     defmacro __using__(opts) do
-      config = Application.fetch_env!(:sleeky, Sleeky)
+      config = Application.fetch_env!(:momo, Momo)
 
       quote do
         @repo <%= @app %>.Repo

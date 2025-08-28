@@ -1,7 +1,7 @@
 defmodule Blogs.Accounts.Events.PasswordRemindedSent do
   @moduledoc false
 
-  use Sleeky.Event
+  use Momo.Event
 
   event do
     field :user_id, type: :id

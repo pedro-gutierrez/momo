@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Subscriptions.UserOnboardings do
   @moduledoc false
-  use Sleeky.Subscription
+  use Momo.Subscription
 
   subscription(
     on: Blogs.Accounts.Events.UserOnboarded,

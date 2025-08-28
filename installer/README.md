@@ -1,16 +1,16 @@
-# Mix sleeky.new
+# Mix momo.new
 
-Provides `sleeky_new` installer as an archive.
+Provides `momo_new` installer as an archive.
 
 ## Installation
 
 To install from Hex, run:
 
-    $ mix archive.install hex sleeky_new
+    $ mix archive.install hex momo_new
 
 To build and install it locally, ensure any previous archive versions are removed:
 
-    $ mix archive.uninstall sleeky_new
+    $ mix archive.uninstall momo_new
 
 Then run:
 
@@ -19,6 +19,6 @@ Then run:
 
 ## Usage
 
-Create a new `sleeky` project with:
+Create a new `momo` project with:
 
-    $ mix sleeky.new hello_world
+    $ mix momo.new hello_world

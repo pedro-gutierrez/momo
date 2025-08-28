@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Mappings.UserRegisteredFromUser do
   @moduledoc false
-  use Sleeky.Mapping
+  use Momo.Mapping
 
   alias Blogs.Accounts.User
   alias Blogs.Accounts.Events.UserRegistered

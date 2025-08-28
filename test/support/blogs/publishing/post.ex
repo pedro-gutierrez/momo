@@ -1,6 +1,6 @@
 defmodule Blogs.Publishing.Post do
   @moduledoc false
-  use Sleeky.Model
+  use Momo.Model
 
   alias Blogs.Publishing.{Author, Blog, Comment}
 

@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Queries.GetUserIds do
   @moduledoc false
-  use Sleeky.Query
+  use Momo.Query
 
   alias Blogs.Accounts.Values.UserId
 
