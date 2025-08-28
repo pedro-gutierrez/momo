@@ -43,8 +43,8 @@ defmodule Momo.Ui.View.Render do
 
   defp do_attrs(attrs), do: Enum.map(attrs, &[" ", do_attr(&1)])
 
-  defp do_attr({name, true}), do: to_string(name)
-  defp do_attr({_name, false}), do: ""
+  defp do_attr({name, value}) when value in [true, "true"], do: to_string(name)
+  defp do_attr({_name, value}) when value in [false, "false"], do: ""
 
   # defp do_attr({name, value}) when is_boolean(value), do: [to_string(name), "=", to_string(value)]
   defp do_attr({name, value}), do: [to_string(name), "=\"", to_string(value), "\""]
