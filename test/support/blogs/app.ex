@@ -1,6 +1,6 @@
 defmodule Blogs.App do
   @moduledoc false
-  use Sleeky.App, otp_app: :sleeky
+  use Momo.App, otp_app: :momo
 
   app roles: "current_user.roles" do
     features do

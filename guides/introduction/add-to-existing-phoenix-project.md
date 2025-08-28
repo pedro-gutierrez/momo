@@ -1,12 +1,12 @@
-# Add Sleeky to an existing Phoenix project
+# Add Momo to an existing Phoenix project
 
-The `sleeky.new` installer generates a simple plug based project from scratch. However, if you already have a Phoenix project, it is quite straightforward to add Sleeky into it.
+The `momo.new` installer generates a simple plug based project from scratch. However, if you already have a Phoenix project, it is quite straightforward to add Momo into it.
 
-## Add sleeky to your mix dependencies
+## Add momo to your mix dependencies
 
 ```elixir
 def deps do
-  [{:sleeky, "~> 0.4"}]
+  [{:momo, "~> 0.4"}]
 end
 ```
 
@@ -17,7 +17,7 @@ At the very least, create both a feature and a model:
 ```elixir
 # lib/my_app/accounts.ex
 defmodule MyApp.Accounts do
-  use Sleeky.Feature
+  use Momo.Feature
 
   feature do
     models do
@@ -30,7 +30,7 @@ end
 ```elixir
 # lib/my_app/accounts/user.ex
 defmodule MyApp.Accounts.User do
-  use Sleeky.Model
+  use Momo.Model
 
   model do
     attribute :email, kind: :string
@@ -38,12 +38,12 @@ defmodule MyApp.Accounts.User do
 end
 ```
 
-## Configure sleeky
+## Configure momo
 
-In your `config.exs`, let Sleeky know about your repo and your features:
+In your `config.exs`, let Momo know about your repo and your features:
 
 ```elixir
-config :sleeky, Sleeky,
+config :momo, Momo,
   repo: MyApp.Repo,
   features: [
     MyApp.Accounts
@@ -55,7 +55,7 @@ config :sleeky, Sleeky,
 Generate migrations for your features and models with:
 
 ```bash
-$ mix sleeky.gen.migrations
+$ mix momo.gen.migrations
 ```
 
 then migrate your database as usual with `mix ecto.migrate`.

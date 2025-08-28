@@ -1,9 +1,9 @@
-defmodule Sleeky.New.MixProject do
+defmodule Momo.New.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :sleeky_new,
+      app: :momo_new,
       version: "0.0.3",
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
@@ -13,13 +13,13 @@ defmodule Sleeky.New.MixProject do
           "Pedro Gutiérrez"
         ],
         licenses: ["MIT"],
-        links: %{"GitHub" => "https://github.com/pedro-gutierrez/sleeky"},
+        links: %{"GitHub" => "https://github.com/pedro-gutierrez/momo"},
         files: ~w(lib mix.exs README.md),
         description: """
-        Sleeky project generator.
+        Momo project generator.
 
-        Provides a `mix sleeky.new` task to bootstrap a new Elixir application
-        with Sleeky dependencies.
+        Provides a `mix momo.new` task to bootstrap a new Elixir application
+        with Momo dependencies.
         """
       ]
     ]

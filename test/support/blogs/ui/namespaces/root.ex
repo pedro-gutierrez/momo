@@ -1,6 +1,6 @@
 defmodule Blogs.Ui.Namespaces.Root do
   @moduledoc false
-  use Sleeky.Ui.Namespace
+  use Momo.Ui.Namespace
 
   namespace "/" do
     routes do

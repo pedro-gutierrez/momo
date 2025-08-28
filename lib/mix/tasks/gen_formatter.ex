@@ -1,5 +1,5 @@
-defmodule Mix.Tasks.Sleeky.Gen.Formatter do
-  @shortdoc "Generates a new .formatter.exs for Sleeky"
+defmodule Mix.Tasks.Momo.Gen.Formatter do
+  @shortdoc "Generates a new .formatter.exs for Momo"
 
   @moduledoc """
   Note: this is an internal tool and is not meant to be used by application developers.
@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Sleeky.Gen.Formatter do
 
   Usage:
 
-      mix sleeky.gen.formatter
+      mix momo.gen.formatter
 
   """
   use Mix.Task
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Sleeky.Gen.Formatter do
 
   @impl true
   def run(_argv) do
-    assigns = [locals_without_parens: Sleeky.locals_without_parens()]
+    assigns = [locals_without_parens: Momo.locals_without_parens()]
 
     create_file(".formatter.exs", formatter_template(assigns))
   end

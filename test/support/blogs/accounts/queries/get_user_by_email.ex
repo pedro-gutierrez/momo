@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Queries.GetUserByEmail do
   @moduledoc false
-  use Sleeky.Query
+  use Momo.Query
 
   alias Blogs.Accounts.User
   alias Blogs.Accounts.Values.UserEmail

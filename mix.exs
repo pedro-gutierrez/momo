@@ -1,11 +1,11 @@
-defmodule Sleeky.MixProject do
+defmodule Momo.MixProject do
   use Mix.Project
 
   @version "0.0.3"
 
   def project do
     [
-      app: :sleeky,
+      app: :momo,
       version: @version,
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(),
@@ -16,9 +16,9 @@ defmodule Sleeky.MixProject do
           "Pedro Gutiérrez"
         ],
         licenses: ["MIT"],
-        links: %{"GitHub" => "https://github.com/pedro-gutierrez/sleeky"},
+        links: %{"GitHub" => "https://github.com/pedro-gutierrez/momo"},
         files: ~w(lib mix.exs .formatter.exs LICENSE.md README.md),
-        description: "Minimalist Elixir application framework"
+        description: "Momo - Minimalist Elixir application framework"
       ],
       deps: deps(),
       docs: docs()

@@ -1,5 +1,5 @@
 defmodule Blogs.Accounts.User do
-  use Sleeky.Model
+  use Momo.Model
 
   model do
     attribute :email, kind: :string

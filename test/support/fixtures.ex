@@ -1,4 +1,4 @@
-defmodule Sleeky.Fixtures do
+defmodule Momo.Fixtures do
   @moduledoc false
 
   alias Blogs.Accounts

@@ -1,7 +1,7 @@
 defmodule Blogs.Accounts.Commands.RemindPassword do
   @moduledoc false
 
-  use Sleeky.Command
+  use Momo.Command
 
   alias Blogs.Accounts.Scopes.SelfAndNotLocked
   alias Blogs.Accounts.Values.UserId

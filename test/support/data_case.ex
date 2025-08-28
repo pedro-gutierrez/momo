@@ -1,8 +1,8 @@
-defmodule Sleeky.DataCase do
+defmodule Momo.DataCase do
   @moduledoc false
 
   defmacro __using__(opts) do
-    config = Application.fetch_env!(:sleeky, Sleeky)
+    config = Application.fetch_env!(:momo, Momo)
     repo = Keyword.fetch!(config, :repo)
     endpoint = Keyword.fetch!(config, :endpoint)
     opts = Keyword.put_new(opts, :async, false)
@@ -18,9 +18,9 @@ defmodule Sleeky.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Sleeky.ErrorsHelper
-      import Sleeky.SqlHelper
-      import Sleeky.Fixtures
+      import Momo.ErrorsHelper
+      import Momo.SqlHelper
+      import Momo.Fixtures
       import Plug.Test
       import Plug.Conn
 
@@ -28,11 +28,11 @@ defmodule Sleeky.DataCase do
       alias Ecto.Adapters.Postgres.Connection, as: SQL
 
       setup tags do
-        Application.ensure_all_started(:sleeky)
+        Application.ensure_all_started(:momo)
         start_supervised!(@repo)
         start_supervised!(@endpoint)
 
-        oban_config = Application.fetch_env!(:sleeky, Oban)
+        oban_config = Application.fetch_env!(:momo, Oban)
         start_supervised!({Oban, oban_config})
 
         pid = Sandbox.start_owner!(@repo, shared: not tags[:async])
@@ -130,15 +130,15 @@ defmodule Sleeky.DataCase do
       defp to_sql(query), do: to_sql(query, @repo)
 
       def assert_event_published(event) do
-        assert_enqueued(worker: Sleeky.Job, args: %{event: event})
+        assert_enqueued(worker: Momo.Job, args: %{event: event})
       end
 
       def refute_event_published(event) do
-        refute_enqueued(worker: Sleeky.Job, args: %{event: event})
+        refute_enqueued(worker: Momo.Job, args: %{event: event})
       end
 
       defp assert_job_success(count \\ 1) do
-        assert_enqueued(worker: Sleeky.Job)
+        assert_enqueued(worker: Momo.Job)
         assert %{success: ^count} = Oban.drain_queue(queue: :default)
       end
     end

@@ -1,7 +1,7 @@
 defmodule Blogs.Accounts.Events.UserRegistered do
   @moduledoc false
 
-  use Sleeky.Event
+  use Momo.Event
 
   event version: 1 do
     field :user_id, type: :id, required: true

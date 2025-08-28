@@ -1,6 +1,6 @@
 # defmodule Blogs.Scopes do
 #   @moduledoc false
-#   use Sleeky.Scopes
+#   use Momo.Scopes
 
 #   scopes roles: "current_user.roles" do
 #     scope :author do

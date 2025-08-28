@@ -1,4 +1,4 @@
-defmodule Sleeky.SqlHelper do
+defmodule Momo.SqlHelper do
   @moduledoc false
   import ExUnit.Assertions
 

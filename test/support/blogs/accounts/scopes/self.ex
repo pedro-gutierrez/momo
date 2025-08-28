@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Scopes.Self do
   @moduledoc false
-  use Sleeky.Scope
+  use Momo.Scope
 
   scope do
     same do

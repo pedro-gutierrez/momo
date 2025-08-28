@@ -1,6 +1,6 @@
 defmodule Blogs.Ui do
   @moduledoc false
-  use Sleeky.Ui
+  use Momo.Ui
 
   ui do
     namespaces do

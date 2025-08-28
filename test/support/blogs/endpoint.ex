@@ -1,6 +1,6 @@
 defmodule Blogs.Endpoint do
   @moduledoc false
-  use Sleeky.Endpoint, otp_app: :sleeky
+  use Momo.Endpoint, otp_app: :momo
 
   endpoint do
     mount Blogs.Api, at: "/api"

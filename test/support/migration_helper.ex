@@ -3,14 +3,14 @@ defmodule MigrationHelper do
   Some utility functions for migration related tests
   """
 
-  alias Sleeky.Migrations
-  alias Sleeky.Migrations.Migration
+  alias Momo.Migrations
+  alias Momo.Migrations.Migration
 
   import ExUnit.Assertions
 
   @doc false
   def generate_migrations(existing \\ []) do
-    app = :sleeky |> Application.fetch_env!(Sleeky) |> Keyword.fetch!(:app)
+    app = :momo |> Application.fetch_env!(Momo) |> Keyword.fetch!(:app)
     features = app.features()
 
     existing

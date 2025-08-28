@@ -1,6 +1,6 @@
 defmodule Blogs.Accounts.Mappings.UserIdFromMap do
   @moduledoc false
-  use Sleeky.Mapping
+  use Momo.Mapping
 
   alias Blogs.Accounts.Values.UserId
 
