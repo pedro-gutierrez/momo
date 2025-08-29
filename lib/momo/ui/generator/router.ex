@@ -25,6 +25,7 @@ defmodule Momo.Ui.Generator.Router do
 
         plug Plug.Parsers, parsers: [:urlencoded, :multipart], length: 20_000_000, pass: ["*/*"]
         plug Plug.MethodOverride
+        plug Momo.Ui.Logger
 
         plug(:match)
         plug(:dispatch)
