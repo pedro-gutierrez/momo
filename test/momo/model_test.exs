@@ -154,4 +154,20 @@ defmodule Momo.ModelTest do
       refute Ecto.assoc_loaded?(credential.user)
     end
   end
+
+  describe "plain_map/1" do
+    test "turns a model into a plain map with string keys" do
+      assert {:ok, user} =
+               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+
+      assert %{
+               "email" => user.email,
+               "external_id" => user.external_id,
+               "id" => user.id,
+               "inserted_at" => user.inserted_at,
+               "public" => user.public,
+               "updated_at" => user.updated_at
+             } == User.plain_map(user)
+    end
+  end
 end
