@@ -18,7 +18,8 @@ defmodule Momo.Model do
       Momo.Model.Generator.EditFunction,
       Momo.Model.Generator.DeleteFunction,
       Momo.Model.Generator.ListFunction,
-      Momo.Model.Generator.Query
+      Momo.Model.Generator.Query,
+      Momo.Model.Generator.PlainMap
     ]
 
   defstruct [
