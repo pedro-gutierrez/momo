@@ -6,7 +6,7 @@ defmodule Momo.Model.Generator.FieldNames do
   def generate(model, _) do
     attrs =
       model.attributes
-      |> Enum.reject(& &1.virtual?)
+      |> Enum.reject(&(&1.virtual? || &1.computation))
       |> Enum.reject(&(&1.name in [:inserted_at, :updated_at]))
 
     parents = Enum.filter(model.relations, &(&1.kind == :parent))
