@@ -11,6 +11,7 @@ defmodule Momo.Command do
 
   defstruct [
     :name,
+    :title,
     :fun_name,
     :feature,
     :params,
@@ -18,7 +19,8 @@ defmodule Momo.Command do
     :policies,
     :atomic?,
     :handler,
-    :events
+    :events,
+    :path
   ]
 
   import Momo.Maps

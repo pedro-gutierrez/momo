@@ -12,6 +12,7 @@ defmodule Momo.Model.Dsl.Attribute do
 
     attribute :required, kind: :boolean, required: false, default: true
     attribute :default, kind: :any, required: false
-    attribute :in, kind: :list, required: false, default: []
+    attribute :in, kind: :module, required: false
+    attribute :computed, kind: :boolean, required: false, default: false
   end
 end

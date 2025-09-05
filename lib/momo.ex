@@ -18,7 +18,9 @@ defmodule Momo do
     Momo.Ui.Dsl,
     Momo.Ui.View.Dsl,
     Momo.Ui.Namespace.Dsl,
-    Momo.Ui.Route.Dsl
+    Momo.Ui.Route.Dsl,
+    Momo.Ui.Form.Dsl,
+    Momo.Enum.Dsl
   ]
 
   @doc """

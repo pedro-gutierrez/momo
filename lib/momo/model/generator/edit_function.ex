@@ -12,9 +12,11 @@ defmodule Momo.Model.Generator.EditFunction do
 
   defp with_map_args(model) do
     quote do
-      def edit(model, attrs) when is_map(attrs) do
+      def edit(model, attrs, opts \\ [])
+
+      def edit(model, attrs, opts) when is_map(attrs) do
         model
-        |> update_changeset(attrs)
+        |> update_changeset(attrs, opts)
         |> unquote(model.feature).repo().update()
       end
     end
@@ -22,10 +24,10 @@ defmodule Momo.Model.Generator.EditFunction do
 
   defp with_keyword_args(_model) do
     quote do
-      def edit(model, attrs) when is_list(attrs) do
+      def edit(model, attrs, opts) when is_list(attrs) do
         attrs = Map.new(attrs)
 
-        edit(model, attrs)
+        edit(model, attrs, opts)
       end
     end
   end
