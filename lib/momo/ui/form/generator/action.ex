@@ -1,4 +1,4 @@
-defmodule Momo.Ui.Form.Generator.Route do
+defmodule Momo.Ui.Form.Generator.Action do
   @moduledoc false
   @behaviour Diesel.Generator
 
@@ -8,13 +8,13 @@ defmodule Momo.Ui.Form.Generator.Route do
     view = Module.concat(caller, View)
 
     definition =
-      {:route, [name: form.route, method: "post"],
+      {:route, [name: form.action, method: "post"],
        [
          {:view, [name: view, for: "default"], []}
        ]}
 
     quote do
-      defmodule Route do
+      defmodule Action do
         use Momo.Ui.Route
 
         @definition unquote(Macro.escape(definition))

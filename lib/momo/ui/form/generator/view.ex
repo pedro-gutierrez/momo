@@ -8,7 +8,7 @@ defmodule Momo.Ui.Form.Generator.View do
     fields = form_fields(form)
 
     action =
-      form.route
+      form.action
       |> String.split("/")
       |> Enum.map_join("/", fn
         ":" <> param -> "{{ #{param} }}"

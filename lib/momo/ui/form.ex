@@ -8,11 +8,11 @@ defmodule Momo.Ui.Form do
     generators: [
       Momo.Ui.Form.Generator.Metadata,
       Momo.Ui.Form.Generator.View,
-      Momo.Ui.Form.Generator.Route,
+      Momo.Ui.Form.Generator.Action,
       Momo.Ui.Form.Generator.Delegates
     ]
 
-  defstruct [:model, :command, :binding, :route, :action_path, :redirect]
+  defstruct [:model, :command, :binding, :action, :action_path, :redirect]
 
   alias Momo.Maps
   alias Momo.Error

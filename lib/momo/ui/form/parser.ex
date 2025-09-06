@@ -22,13 +22,13 @@ defmodule Momo.Ui.Form.Parser do
         segment -> segment
       end)
 
-    route = Keyword.fetch!(attrs, :route)
+    action = Keyword.fetch!(attrs, :action)
 
     %Form{
       model: model,
       command: command,
       binding: binding,
-      route: route,
+      action: action,
       redirect: redirect
     }
   end
