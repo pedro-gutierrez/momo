@@ -3,6 +3,7 @@ defmodule Momo.Value.Dsl.Value do
   use Diesel.Tag
 
   tag do
-    child :field, min: 1
+    attribute :from, kind: :module, required: false
+    child :field, min: 0
   end
 end

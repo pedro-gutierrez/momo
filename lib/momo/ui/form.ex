@@ -16,6 +16,7 @@ defmodule Momo.Ui.Form do
   defstruct [:model, :command, :binding, :route, :action_path, :redirect]
 
   alias Momo.Maps
+  alias Momo.Error
 
   @doc """
   Execute a form action
@@ -28,13 +29,18 @@ defmodule Momo.Ui.Form do
 
     case apply(feature, fun_name, [params]) do
       {:ok, result} ->
-        redirect = redirect(form, params, result)
-        IO.inspect(result: result, redirect: redirect)
+        {:redirect, redirect(form, params, result)}
 
-        {:redirect, redirect}
+      {:error, %Ecto.Changeset{} = errors} ->
+        {params, model} = Map.split(params, ["glob"])
+        errors = Error.simple(errors)
 
-      {:error, error} ->
-        {:error, error}
+        params
+        |> Map.put(form.binding(), model)
+        |> Map.put("errors", errors)
+
+      other ->
+        other
     end
   end
 

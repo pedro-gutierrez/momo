@@ -21,7 +21,7 @@ defmodule Momo.Ui.Form.Generator.View do
          {:div, [],
           [
             {:h1, [], [command.title()]},
-            {:form, [action: action, method: "post"],
+            {:form, [action: action, method: "post", "up-submit": true, "up-target": "form"],
              [
                {:fieldset, [], fields},
                {:input, [type: "submit", value: "Submit"], []}
@@ -47,7 +47,7 @@ defmodule Momo.Ui.Form.Generator.View do
     |> Enum.reject(& &1.computation)
     |> Enum.map(fn field ->
       label = label(field.name)
-      form_field = form_field(field, form)
+      form_field = field |> form_fields(form) |> List.flatten()
       {:label, [], [label, form_field]}
     end)
   end
@@ -59,7 +59,7 @@ defmodule Momo.Ui.Form.Generator.View do
   defp type(:date), do: "date"
   defp type(_), do: "text"
 
-  defp form_field(field, form) do
+  defp form_fields(field, form) do
     cond do
       field.in ->
         options =
@@ -67,18 +67,22 @@ defmodule Momo.Ui.Form.Generator.View do
             {:option, [value: value], [label]}
           end
 
-        {:select, [name: field.name], options}
+        [{:select, [name: field.name], options}]
 
       true ->
         type = type(field.kind)
 
-        {:input,
-         [
-           type: type,
-           name: field.name,
-           placeholder: "Enter #{field.name}",
-           value: "{{ #{form.binding}.#{field.name} }}"
-         ], []}
+        [
+          {:input,
+           [
+             "aria-invalid": {"true", "{{ errors.#{field.name} }}"},
+             type: type,
+             name: field.name,
+             placeholder: "Enter #{field.name}",
+             value: "{{ #{form.binding}.#{field.name} }}"
+           ], []},
+          {:small, [if: "{{ errors.#{field.name} }}"], ["{{ errors.#{field.name} }}"]}
+        ]
     end
   end
 end

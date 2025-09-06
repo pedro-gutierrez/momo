@@ -4,6 +4,7 @@ defmodule Momo.Ui.Route.Helper do
   """
 
   import Plug.Conn
+  require Logger
 
   @doc """
   Converts the result of a ui action into either an html view or a redirect
@@ -36,6 +37,8 @@ defmodule Momo.Ui.Route.Helper do
   def result({:redirect, path}, conn, _params, _views) do
     conn = put_resp_header(conn, "location", path)
 
+    Logger.info("Redirecting to #{path}")
+
     send_resp(conn, 302, "")
   end
 
@@ -51,7 +54,9 @@ defmodule Momo.Ui.Route.Helper do
 
   defp render_view(views, view, conn, model, status) do
     view = Map.fetch!(views, view)
-    html = view.render(model)
+    {ms, html} = :timer.tc(fn -> view.render(model) end, :millisecond)
+
+    Logger.info("Rendered #{inspect(view)} in #{ms} ms")
 
     conn
     |> put_resp_content_type("text/html")

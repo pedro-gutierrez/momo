@@ -5,7 +5,13 @@ defmodule Momo.Ui.Form.Generator.Route do
   @impl true
   def generate(form, opts) do
     caller = Keyword.fetch!(opts, :caller_module)
-    definition = {:route, [name: form.route, method: "post", action: caller], []}
+    view = Module.concat(caller, View)
+
+    definition =
+      {:route, [name: form.route, method: "post", action: caller],
+       [
+         {:view, [name: view, for: "default"], []}
+       ]}
 
     quote do
       defmodule Route do

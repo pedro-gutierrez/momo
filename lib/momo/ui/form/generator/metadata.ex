@@ -7,6 +7,7 @@ defmodule Momo.Ui.Form.Generator.Metadata do
     quote do
       def command, do: unquote(form.command)
       def redirect, do: unquote(form.redirect)
+      def binding, do: unquote(form.binding)
     end
   end
 end

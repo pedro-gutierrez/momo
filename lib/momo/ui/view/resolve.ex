@@ -1,7 +1,7 @@
 defmodule Momo.Ui.View.Resolve do
   @moduledoc false
 
-  @empty {:span, [], []}
+  @empty nil
 
   def resolve({:component, [{:name, component}, {:using, slot} | _] = opts, _}, params) do
     alias = Keyword.get(opts, :as)
@@ -102,11 +102,31 @@ defmodule Momo.Ui.View.Resolve do
   def resolve(value, _params) when is_atom(value) or is_number(value), do: to_string(value)
 
   defp resolve_attrs(attrs, params) do
-    for {name, value} <- attrs do
-      value = resolve(value, params)
-      {name, value}
-    end
+    attrs
+    |> Enum.map(fn
+      {name, {_, _} = conditional} ->
+        value =
+          resolve_conditional_value(conditional, params)
+
+        {name, value}
+
+      {name, conditionals} when is_list(conditionals) ->
+        value =
+          conditionals
+          |> Enum.map(&resolve_conditional_value(&1, params))
+          |> Enum.reject(&is_nil/1)
+          |> Enum.join(" ")
+
+        {name, value}
+
+      {name, value} ->
+        {name, resolve(value, params)}
+    end)
+    |> Enum.reject(fn {_name, value} -> is_nil(value) end)
   end
+
+  defp resolve_conditional_value({value, condition}, params),
+    do: if(condition |> resolve(params) |> truthy?(), do: value)
 
   defp resolve_slots(slots, params) do
     slots
