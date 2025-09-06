@@ -7,7 +7,6 @@ defmodule Momo.Ui.Form.Generator.Delegates do
     quote do
       defdelegate render(args), to: __MODULE__.View
       defdelegate source, to: __MODULE__.View
-      defdelegate execute(params), to: __MODULE__.Action
     end
   end
 end

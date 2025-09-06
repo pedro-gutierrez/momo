@@ -9,7 +9,6 @@ defmodule Momo.Ui.Form do
       Momo.Ui.Form.Generator.Metadata,
       Momo.Ui.Form.Generator.View,
       Momo.Ui.Form.Generator.Route,
-      Momo.Ui.Form.Generator.Action,
       Momo.Ui.Form.Generator.Delegates
     ]
 
@@ -19,11 +18,11 @@ defmodule Momo.Ui.Form do
   alias Momo.Error
 
   @doc """
-  Execute a form action
+  Execute a form route
 
   This function takes the params from the request and invokes the feature command configured for the form
   """
-  def action(form, params) do
+  def execute_route(form, params) do
     feature = form.command().feature()
     fun_name = form.command().fun_name()
 

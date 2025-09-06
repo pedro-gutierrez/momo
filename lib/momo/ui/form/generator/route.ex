@@ -8,7 +8,7 @@ defmodule Momo.Ui.Form.Generator.Route do
     view = Module.concat(caller, View)
 
     definition =
-      {:route, [name: form.route, method: "post", action: caller],
+      {:route, [name: form.route, method: "post"],
        [
          {:view, [name: view, for: "default"], []}
        ]}
@@ -18,6 +18,8 @@ defmodule Momo.Ui.Form.Generator.Route do
         use Momo.Ui.Route
 
         @definition unquote(Macro.escape(definition))
+
+        def execute(params), do: Momo.Ui.Form.execute_route(unquote(caller), params)
       end
     end
   end

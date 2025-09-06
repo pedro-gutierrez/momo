@@ -8,7 +8,7 @@ defmodule Momo.Ui.Route.Generator.Handler do
       defmodule Handler do
         use Plug.Builder
 
-        @action unquote(route.action)
+        @action unquote(route.module)
         @views unquote(Macro.escape(route.views))
 
         import Momo.Ui.Route.Helper

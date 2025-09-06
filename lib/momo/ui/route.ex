@@ -5,8 +5,9 @@ defmodule Momo.Ui.Route do
     dsl: Momo.Ui.Route.Dsl,
     generators: [
       Momo.Ui.Route.Generator.Handler,
-      Momo.Ui.Route.Generator.Metadata
+      Momo.Ui.Route.Generator.Metadata,
+      Momo.Ui.Route.Generator.Execute
     ]
 
-  defstruct [:path, :method, :action, :views]
+  defstruct [:module, :path, :method, :action, :views]
 end
