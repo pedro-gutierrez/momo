@@ -8,8 +8,9 @@ defmodule Momo.Ui.Form do
     generators: [
       Momo.Ui.Form.Generator.Metadata,
       Momo.Ui.Form.Generator.View,
-      Momo.Ui.Form.Generator.Action,
-      Momo.Ui.Form.Generator.Delegates
+      Momo.Ui.Form.Generator.Route,
+      Momo.Ui.Form.Generator.Delegates,
+      Momo.Ui.Form.Generator.Params
     ]
 
   defstruct [:model, :command, :binding, :action, :action_path, :redirect]
@@ -23,6 +24,7 @@ defmodule Momo.Ui.Form do
   This function takes the params from the request and invokes the feature command configured for the form
   """
   def execute_route(form, params) do
+    params = form.params(params)
     feature = form.command().feature()
     fun_name = form.command().fun_name()
 
@@ -41,6 +43,7 @@ defmodule Momo.Ui.Form do
       other ->
         other
     end
+    |> IO.inspect()
   end
 
   defp redirect(form, params, result) do

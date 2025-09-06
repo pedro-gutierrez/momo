@@ -5,11 +5,11 @@ defmodule Momo.Ui.Form.Parser do
   alias Momo.Ui.Form
 
   @impl true
-  def parse({:form, attrs, _children}, opts) do
+  def parse({:form, attrs, _children}, _opts) do
     model = Keyword.fetch!(attrs, :model)
     command = Keyword.fetch!(attrs, :command)
 
-    default_binding = attrs |> Keyword.get(:binding) |> binding(opts)
+    default_binding = attrs |> Keyword.get(:binding) |> binding(model)
 
     binding = attrs[:binding] || default_binding
 
@@ -33,14 +33,6 @@ defmodule Momo.Ui.Form.Parser do
     }
   end
 
-  defp binding(nil, opts) do
-    opts
-    |> Keyword.fetch!(:caller_module)
-    |> Module.split()
-    |> List.last()
-    |> String.replace("Form", "")
-    |> Macro.underscore()
-  end
-
+  defp binding(nil, model), do: model.name() |> to_string()
   defp binding(binding, _), do: binding
 end

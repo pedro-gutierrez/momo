@@ -44,6 +44,7 @@ defmodule Momo.Model.Generator.Changesets do
         changes =
           model
           |> cast(attrs, @fields_on_insert)
+          |> maybe_add_id()
           |> validate_required(@required_fields)
           |> unique_constraint([:id], name: unquote(primary_key_constraint))
 
