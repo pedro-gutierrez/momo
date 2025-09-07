@@ -34,6 +34,14 @@ defmodule Momo.Enum.Generator.Functions do
       end
 
       @doc """
+      Finds the label for a given value
+      """
+      def label_for!(value) do
+        {:ok, label} = Momo.Enum.label_for(__MODULE__, value)
+        label
+      end
+
+      @doc """
       Finds the value for a given label
       """
       def value_for(label) do
