@@ -64,7 +64,11 @@ defmodule Momo.Ui.Form.Generator.View do
       field.in ->
         options =
           for {label, value} <- field.in.options() do
-            {:option, [value: value], [label]}
+            {:option,
+             [
+               value: value,
+               selected: {true, "#{form.binding}.#{field.name} = #{inspect(value)}"}
+             ], [label]}
           end
 
         [{:select, [name: field.name], options}]
