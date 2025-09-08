@@ -79,7 +79,8 @@ defmodule Momo.ModelTest do
                  user: user,
                  name: "password",
                  value: "foo",
-                 enabled: true
+                 enabled: true,
+                 type: 1
                )
 
       assert {:ok, cred2} =
@@ -87,7 +88,8 @@ defmodule Momo.ModelTest do
                  user: user,
                  name: "password",
                  value: "bar",
-                 enabled: false
+                 enabled: false,
+                 type: 1
                )
 
       assert cred2.id == cred1.id
@@ -96,6 +98,12 @@ defmodule Momo.ModelTest do
       refute cred2.enabled
 
       assert {:ok, ^cred2} = Blogs.Accounts.Credential.fetch(cred1.id)
+    end
+
+    test "executes computations on fields" do
+      assert {:ok, onboarding} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 2)
+
+      assert onboarding.state == "in_progress"
     end
   end
 
@@ -144,7 +152,8 @@ defmodule Momo.ModelTest do
                  user: user,
                  name: "password",
                  value: "bar",
-                 enabled: false
+                 enabled: false,
+                 type: 1
                )
 
       assert {:ok, credential} = Credential.fetch(credential.id)

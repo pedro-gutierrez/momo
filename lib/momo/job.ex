@@ -62,7 +62,7 @@ defmodule Momo.Job do
 
     meta =
       Keyword.merge(meta,
-        reason: Error.format(reason),
+        reason: reason |> Error.format() |> inspect(),
         attempt: job.attempt,
         attempts_left: attempts_left
       )

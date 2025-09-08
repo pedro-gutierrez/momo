@@ -65,6 +65,11 @@ defmodule Momo.Model.Generator.Metadata do
           field -> {:ok, field}
         end
       end
+
+      def field!(name) do
+        {:ok, field} = field(name)
+        field
+      end
     end
   end
 end

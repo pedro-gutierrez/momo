@@ -5,7 +5,6 @@ defmodule Momo.Ui.View do
     overrides: [div: 2],
     generators: [
       Momo.Ui.View.Generator.Source,
-      Momo.Ui.View.Generator.Render,
-      Momo.Ui.View.Generator.Data
+      Momo.Ui.View.Generator.Render
     ]
 end

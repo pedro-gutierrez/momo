@@ -17,6 +17,8 @@ defmodule Momo.Scope do
   alias Momo.QueryBuilder
   alias Momo.Scope.Expression
 
+  require Logger
+
   defmodule Expression do
     @moduledoc false
     defstruct [:op, :args]
@@ -54,16 +56,17 @@ defmodule Momo.Scope do
 
     result = Compare.compare(expr.op, values)
 
-    if scope.debug?() do
-      IO.inspect(
-        scope: scope,
-        args: expr.args,
-        values: values,
-        op: expr.op,
-        context: context,
-        result: result
-      )
-    end
+    Logger.debug("Evaluating scope",
+      scope: scope,
+      info:
+        inspect(
+          args: expr.args,
+          values: values,
+          op: expr.op,
+          context: context,
+          result: result
+        )
+    )
 
     result
   end

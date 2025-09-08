@@ -5,8 +5,29 @@ defmodule Momo.Value.Parser do
   alias Momo.Value
   alias Momo.Value.Field
 
-  def parse({:value, _, fields}, _opts) do
-    fields =
+  def parse({:value, opts, fields}, _opts) do
+    model_fields =
+      case opts[:from] do
+        nil ->
+          []
+
+        model ->
+          model.fields()
+          |> Map.values()
+          |> Enum.reject(&(&1.computation || &1.name in [:inserted_at, :updated_at]))
+          |> Enum.map(fn field ->
+            %Field{
+              name: field.name,
+              type: field.kind,
+              many: false,
+              default: field.default,
+              allowed_values: field.in,
+              required: field.required?
+            }
+          end)
+      end
+
+    custom_fields =
       for {:field, attrs, _} <- fields do
         %Field{
           name: Keyword.fetch!(attrs, :name),
@@ -17,6 +38,8 @@ defmodule Momo.Value.Parser do
           required: Keyword.get(attrs, :required, true)
         }
       end
+
+    fields = custom_fields ++ model_fields
 
     %Value{fields: fields}
   end

@@ -39,6 +39,8 @@ defmodule Momo.Query do
   import Ecto.Query
   import Momo.Maps
 
+  require Logger
+
   @doc """
   Returns the feature function name for a query
   """
@@ -137,10 +139,7 @@ defmodule Momo.Query do
 
   defp call_repo(queriable, query, _context) do
     repo = query.feature().repo()
-
-    if query.debug?() do
-      IO.inspect(query: query, computed: queriable)
-    end
+    Logger.debug("Executing query", query: query, computed: inspect(queriable))
 
     if query.many?() do
       queriable |> repo.all()

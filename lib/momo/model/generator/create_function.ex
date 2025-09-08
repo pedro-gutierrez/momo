@@ -29,7 +29,7 @@ defmodule Momo.Model.Generator.CreateFunction do
         opts = Keyword.merge(unquote(conflict_opts), opts)
 
         %__MODULE__{}
-        |> insert_changeset(attrs)
+        |> insert_changeset(attrs, opts)
         |> unquote(model.feature).repo().insert(opts)
       end
     end

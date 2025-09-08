@@ -38,6 +38,7 @@ defmodule Momo.Ui.Route.Parser do
     views = Map.merge(default_views, views)
 
     %Route{
+      module: caller,
       views: views,
       method: method,
       path: path,

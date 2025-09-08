@@ -10,6 +10,17 @@ defmodule Momo.Command.Parser do
 
   def parse({:command, attrs, children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
+
+    default_title =
+      name
+      |> Module.split()
+      |> List.last()
+      |> Macro.underscore()
+      |> String.split("_")
+      |> Enum.map_join(" ", &String.capitalize/1)
+
+    title = attrs[:title] || default_title
+
     caller = Keyword.fetch!(opts, :caller_module)
     feature = feature_module(caller)
 
@@ -61,6 +72,7 @@ defmodule Momo.Command.Parser do
 
     %Command{
       name: name,
+      title: title,
       fun_name: fun_name,
       feature: feature,
       params: params,

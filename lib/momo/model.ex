@@ -60,6 +60,7 @@ defmodule Momo.Model do
       :default,
       :enum,
       :column_name,
+      :computation,
       required?: true,
       primary_key?: false,
       virtual?: false,
@@ -85,6 +86,7 @@ defmodule Momo.Model do
       :storage,
       :inverse,
       :default,
+      :computation,
       required?: true,
       virtual?: false,
       computed?: false,
@@ -132,5 +134,17 @@ defmodule Momo.Model do
       :scope,
       :policy
     ]
+  end
+
+  @doc """
+  Runs computations of all fields marked as computed
+  """
+  def compute_fields!(model, attrs, context) do
+    model.fields()
+    |> Enum.filter(fn {_name, field} -> field.computation end)
+    |> Enum.reduce(attrs, fn {name, field}, acc ->
+      {:ok, computed} = field.computation.execute(acc, context)
+      Map.put(acc, name, computed)
+    end)
   end
 end

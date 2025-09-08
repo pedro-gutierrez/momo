@@ -2,6 +2,8 @@ defmodule Momo.Model.Generator.Changesets do
   @moduledoc false
   @behaviour Diesel.Generator
 
+  import Momo.Naming
+
   @impl true
   def generate(model, _) do
     [
@@ -35,15 +37,18 @@ defmodule Momo.Model.Generator.Changesets do
     inclusion_validations = inclusion_validations(model)
     parents_contraints = parents_constraints(model)
     uuid_validations = uuid_validations(model)
+    computed_changes = computed_changes(model)
 
-    quote do
-      def insert_changeset(%__MODULE__{} = model, attrs) do
+    quote location: :keep do
+      def insert_changeset(%__MODULE__{} = model, attrs, opts) do
         changes =
           model
           |> cast(attrs, @fields_on_insert)
+          |> maybe_add_id()
           |> validate_required(@required_fields)
           |> unique_constraint([:id], name: unquote(primary_key_constraint))
 
+        unquote(computed_changes)
         unquote_splicing(uuid_validations)
         unquote_splicing(unique_constraints)
         unquote_splicing(inclusion_validations)
@@ -56,14 +61,16 @@ defmodule Momo.Model.Generator.Changesets do
     inclusion_validations = inclusion_validations(model)
     parents_contraints = parents_constraints(model)
     uuid_validations = uuid_validations(model)
+    computed_changes = computed_changes(model)
 
-    quote do
-      def update_changeset(%__MODULE__{} = model, attrs) do
+    quote location: :keep do
+      def update_changeset(%__MODULE__{} = model, attrs, opts) do
         changes =
           model
           |> cast(attrs, @fields_on_update)
           |> validate_required(@required_fields)
 
+        unquote(computed_changes)
         unquote_splicing(uuid_validations)
         unquote_splicing(inclusion_validations)
         unquote_splicing(parents_contraints)
@@ -125,7 +132,9 @@ defmodule Momo.Model.Generator.Changesets do
   end
 
   defp inclusion_validations(model) do
-    for %{name: name, in: allowed_values} when allowed_values != [] <- model.attributes do
+    for %{name: name, in: enum} when not is_nil(nil) <- model.attributes do
+      allowed_values = enum.values()
+
       quote do
         changes = validate_inclusion(changes, unquote(name), unquote(allowed_values))
       end
@@ -137,6 +146,23 @@ defmodule Momo.Model.Generator.Changesets do
       quote do
         changes = validate_uuid(changes, unquote(name))
       end
+    end
+  end
+
+  defp computed_changes(model) do
+    computations =
+      for %{name: name, computation: computation} when not is_nil(computation) <- model.attributes do
+        {name, computation}
+      end
+
+    quote location: :keep do
+      model = apply_changes(changes)
+
+      changes =
+        Enum.reduce(unquote(Macro.escape(computations)), changes, fn {name, computation}, acc ->
+          {:ok, value} = computation.execute(model, opts)
+          put_change(acc, name, value)
+        end)
     end
   end
 end

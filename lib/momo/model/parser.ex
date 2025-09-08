@@ -49,10 +49,18 @@ defmodule Momo.Model.Parser do
         ecto_type = ecto_type(kind)
         storage = storage(kind)
         required = Keyword.get(opts, :required, true)
+
         allowed_values = Keyword.get(opts, :in, [])
+
         default = Keyword.get(opts, :default)
 
         ensure_valid_field_name!(model, attr_name)
+
+        computation =
+          if opts[:computed] do
+            computation = Macro.camelize("#{model.name}_#{attr_name}")
+            Module.concat([model.feature, Computations, computation])
+          end
 
         %Attribute{
           name: attr_name,
@@ -63,7 +71,8 @@ defmodule Momo.Model.Parser do
           aliases: [attr_name],
           required?: required,
           in: allowed_values,
-          default: default
+          default: default,
+          computation: computation
         }
       end
 

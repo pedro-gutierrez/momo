@@ -7,8 +7,9 @@ defmodule Momo.Ui.Route.Generator.Handler do
     quote do
       defmodule Handler do
         use Plug.Builder
+        require Logger
 
-        @action unquote(route.action)
+        @action unquote(route.module)
         @views unquote(Macro.escape(route.views))
 
         import Momo.Ui.Route.Helper
@@ -16,6 +17,7 @@ defmodule Momo.Ui.Route.Generator.Handler do
         plug(:execute)
 
         def execute(conn, _opts) do
+          Logger.debug("Executing route #{inspect(@action)}")
           params = conn.params
 
           params

@@ -52,6 +52,7 @@ defmodule Momo.MixProject do
       {:oban, "~> 2.18"},
       {:paginator, "~> 1.2.0"},
       {:postgrex, ">= 0.0.0"},
+      {:predicator, "~> 3.3"},
       {:plug, "~> 1.14"},
       {:slugify, "~> 1.3"},
       {:validate, "~> 1.3"}

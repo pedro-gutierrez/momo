@@ -20,4 +20,12 @@ defmodule Momo.Model.Helpers do
       end
     end)
   end
+
+  def maybe_add_id(changeset) do
+    if changed?(changeset, :id) do
+      changeset
+    else
+      Ecto.Changeset.put_change(changeset, :id, Ecto.UUID.generate())
+    end
+  end
 end

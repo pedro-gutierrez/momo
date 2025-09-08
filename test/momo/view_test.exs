@@ -200,6 +200,38 @@ defmodule Momo.Ui.ViewTest do
     end
   end
 
+  defmodule CheckboxWithExpressionView do
+    use Momo.Ui.View
+
+    view do
+      input type: "checkbox", checked: {"active = true"}
+    end
+  end
+
+  defmodule CheckboxWithExplicitExpressionView do
+    use Momo.Ui.View
+
+    view do
+      input type: "checkbox", checked: {:if, "active = true"}
+    end
+  end
+
+  defmodule InputWithAriaAndTemplateView do
+    use Momo.Ui.View
+
+    view do
+      input "aria-invalid": [{"true", "{{ invalid }}"}, {"false", {:unless, "invalid"}}]
+    end
+  end
+
+  defmodule InputWithAriaAndExpressionView do
+    use Momo.Ui.View
+
+    view do
+      input "aria-invalid": [{"true", "invalid = true"}, {"false", "NOT(invalid)"}]
+    end
+  end
+
   describe "html" do
     test "renders liquid variables" do
       params = %{"title" => "Foo", "myClass" => "bar"}
@@ -273,17 +305,17 @@ defmodule Momo.Ui.ViewTest do
 
     test "supports if conditionals" do
       assert "<p>Visible</p>" == IfView.render(%{"visible" => true})
-      assert "<span></span>" == IfView.render(%{"visible" => false})
+      assert "" == IfView.render(%{"visible" => false})
     end
 
     test "supports unless conditionals" do
       assert "<p>Visible</p>" == UnlessView.render(%{"hidden" => false})
-      assert "<span></span>" == UnlessView.render(%{"hidden" => true})
+      assert "" == UnlessView.render(%{"hidden" => true})
     end
 
     test "supports if conditionals inside components" do
       assert "<p>Visible</p>" == IfViewAsComponentView.render(%{"visible" => true})
-      assert "<span></span>" == IfViewAsComponentView.render(%{"visible" => false})
+      assert "" == IfViewAsComponentView.render(%{"visible" => false})
     end
 
     test "renders aria attribute values as strings" do
@@ -294,6 +326,34 @@ defmodule Momo.Ui.ViewTest do
     test "renders checkboxes attributes without values" do
       assert "<input type=\"checkbox\" checked>" == CheckboxView.render(%{"checked" => true})
       assert "<input type=\"checkbox\" >" == CheckboxView.render(%{"checked" => false})
+    end
+
+    test "supports expressions in attribute values" do
+      assert "<input type=\"checkbox\" checked>" ==
+               CheckboxWithExpressionView.render(%{"active" => true})
+
+      assert "<input type=\"checkbox\" checked>" ==
+               CheckboxWithExplicitExpressionView.render(%{"active" => true})
+
+      assert "<input type=\"checkbox\">" ==
+               CheckboxWithExpressionView.render(%{"active" => false})
+
+      assert "<input type=\"checkbox\">" ==
+               CheckboxWithExplicitExpressionView.render(%{"active" => false})
+    end
+
+    test "supports aria attributes" do
+      assert "<input aria-invalid=\"true\">" ==
+               InputWithAriaAndTemplateView.render(%{"invalid" => true})
+
+      assert "<input aria-invalid=\"false\">" ==
+               InputWithAriaAndTemplateView.render(%{"invalid" => false})
+
+      assert "<input aria-invalid=\"true\">" ==
+               InputWithAriaAndExpressionView.render(%{"invalid" => true})
+
+      assert "<input aria-invalid=\"false\">" ==
+               InputWithAriaAndExpressionView.render(%{"invalid" => false})
     end
   end
 end
