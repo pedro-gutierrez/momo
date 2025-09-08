@@ -18,10 +18,11 @@ defmodule Momo.Ui.Form.Generator.View do
     definition =
       {:view, [],
        [
-         {:div, [],
+         {:div, [id: form.id],
           [
             {:h1, [], [command.title()]},
-            {:form, [action: action, method: "post", "up-submit": true, "up-target": "form"],
+            {:form,
+             [action: action, method: "post", "up-submit": true, "up-target": "##{form.id}"],
              [
                {:fieldset, [], fields},
                {:input, [type: "submit", value: "Submit"], []}

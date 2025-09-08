@@ -56,7 +56,7 @@ defmodule Momo.Ui.Route.Helper do
     view = Map.fetch!(views, view)
     {ms, html} = :timer.tc(fn -> view.render(model) end, :millisecond)
 
-    Logger.info("Rendered #{inspect(view)} in #{ms} ms")
+    Logger.debug("Rendered #{inspect(view)} in #{ms} ms")
 
     conn
     |> put_resp_content_type("text/html")

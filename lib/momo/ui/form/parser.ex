@@ -5,7 +5,7 @@ defmodule Momo.Ui.Form.Parser do
   alias Momo.Ui.Form
 
   @impl true
-  def parse({:form, attrs, _children}, _opts) do
+  def parse({:form, attrs, _children}, opts) do
     model = Keyword.fetch!(attrs, :model)
     command = Keyword.fetch!(attrs, :command)
 
@@ -24,7 +24,15 @@ defmodule Momo.Ui.Form.Parser do
 
     action = Keyword.fetch!(attrs, :action)
 
+    form_id =
+      opts
+      |> Keyword.fetch!(:caller_module)
+      |> Module.split()
+      |> List.last()
+      |> Macro.underscore()
+
     %Form{
+      id: form_id,
       model: model,
       command: command,
       binding: binding,

@@ -13,7 +13,7 @@ defmodule Momo.Ui.Form do
       Momo.Ui.Form.Generator.Params
     ]
 
-  defstruct [:model, :command, :binding, :action, :action_path, :redirect]
+  defstruct [:id, :model, :command, :binding, :action, :action_path, :redirect]
 
   alias Momo.Maps
   alias Momo.Error
