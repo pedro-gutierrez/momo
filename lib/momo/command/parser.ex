@@ -70,6 +70,8 @@ defmodule Momo.Command.Parser do
       |> Macro.underscore()
       |> String.to_atom()
 
+    many = Keyword.get(attrs, :many, false)
+
     %Command{
       name: name,
       title: title,
@@ -77,6 +79,7 @@ defmodule Momo.Command.Parser do
       feature: feature,
       params: params,
       returns: returns,
+      many: many,
       policies: policies,
       atomic?: atomic?,
       events: events

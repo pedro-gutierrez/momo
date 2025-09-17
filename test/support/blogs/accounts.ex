@@ -10,6 +10,7 @@ defmodule Blogs.Accounts do
     end
 
     commands do
+      Blogs.Accounts.Commands.ExpireCredentials
       Blogs.Accounts.Commands.RegisterUser
       Blogs.Accounts.Commands.RemindPassword
       Blogs.Accounts.Commands.EnableUser
@@ -30,9 +31,11 @@ defmodule Blogs.Accounts do
     end
 
     events do
-      Blogs.Accounts.Events.UserRegistered
+      Blogs.Accounts.Events.CredentialsExpired
       Blogs.Accounts.Events.PasswordRemindedSent
       Blogs.Accounts.Events.UserOnboarded
+      Blogs.Accounts.Events.UserRegistered
+      Blogs.Accounts.Events.UsersLocked
     end
 
     flows do
