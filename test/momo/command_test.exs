@@ -1,7 +1,7 @@
 defmodule Momo.CommandTest do
   use Momo.DataCase
 
-  alias Blogs.Accounts.Commands.{RemindPassword, RegisterUser}
+  alias Blogs.Accounts.Commands.{ExpireCredentials, RemindPassword, RegisterUser}
   alias Blogs.Accounts.User
   alias Blogs.Accounts.Values.UserId
   alias Blogs.Accounts.Events.UserRegistered
@@ -66,6 +66,15 @@ defmodule Momo.CommandTest do
       assert {:ok, result, events} = RemindPassword.execute(params, context)
       assert result == params
       assert events == []
+    end
+
+    test "returns one event per item returned" do
+      params = %UserId{user_id: uuid()}
+      context = %{}
+
+      assert {:ok, credentials, events} = ExpireCredentials.execute(params, context)
+      assert 2 == length(credentials)
+      assert 2 == length(events)
     end
   end
 end

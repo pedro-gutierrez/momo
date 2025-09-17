@@ -30,7 +30,8 @@ defmodule Momo.Feature do
     events: [],
     flows: [],
     subscriptions: [],
-    values: []
+    values: [],
+    mappings: []
   ]
 
   require Logger

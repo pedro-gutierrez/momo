@@ -97,7 +97,7 @@ defmodule Momo.Query do
   Executes the query with the given parameters and context
   """
   def execute(query, params, context) do
-    params = Map.new(params)
+    params = params(params)
 
     with {:ok, params} <- query.params().validate(params),
          context <- Map.put(context, :params, params) do
@@ -136,6 +136,10 @@ defmodule Momo.Query do
       |> call_repo(query, context)
     end
   end
+
+  defp params(params) when is_struct(params), do: Map.from_struct(params)
+  defp params(params) when is_list(params), do: Map.new(params)
+  defp params(params) when is_map(params), do: params
 
   defp call_repo(queriable, query, _context) do
     repo = query.feature().repo()

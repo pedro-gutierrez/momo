@@ -21,7 +21,7 @@ defmodule Momo.Job do
     event = Module.concat([event])
 
     with {:ok, event} <- event.decode(params),
-         {:ok, _} <- subscription.execute(event) do
+         :ok <- execute_subscription(subscription, event) do
       handle_success(subscription: subscription)
     else
       {:error, reason} ->
@@ -54,6 +54,14 @@ defmodule Momo.Job do
     e ->
       reason = Exception.format(:error, e, __STACKTRACE__)
       handle_error(job, reason, command: command, flow: flow)
+  end
+
+  defp execute_subscription(subscription, event) do
+    case subscription.execute(event) do
+      :ok -> :ok
+      {:ok, _} -> :ok
+      {:error, _} = error -> error
+    end
   end
 
   defp handle_error(job, reason, meta) do

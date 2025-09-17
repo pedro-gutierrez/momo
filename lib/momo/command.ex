@@ -16,6 +16,7 @@ defmodule Momo.Command do
     :feature,
     :params,
     :returns,
+    :many,
     :policies,
     :atomic?,
     :handler,
@@ -89,16 +90,33 @@ defmodule Momo.Command do
 
   defp maybe_create_events(_feature, [], _result, _context), do: {:ok, []}
 
-  defp maybe_create_events(feature, events, result, context) do
+  defp maybe_create_events(feature, events, result, context) when is_list(events) do
     with events when is_list(events) <-
-           Enum.reduce_while(events, [], fn event, events ->
-             case maybe_create_event(feature, event, result, context) do
-               nil -> {:cont, events}
-               {:ok, event} -> {:cont, [event | events]}
+           Enum.reduce_while(events, [], fn event, acc ->
+             case maybe_create_events(feature, event, result, context) do
+               nil -> {:cont, acc}
+               {:ok, new_events} when is_list(new_events) -> {:cont, new_events ++ acc}
+               {:ok, new_event} -> {:cont, [new_event | acc]}
                {:error, reason} -> {:halt, {:error, reason}}
              end
            end),
          do: {:ok, Enum.reverse(events)}
+  end
+
+  defp maybe_create_events(feature, event, result, context) when is_list(result) do
+    with events when is_list(events) <-
+           Enum.reduce_while(result, [], fn item, acc ->
+             case maybe_create_event(feature, event, item, context) do
+               nil -> {:cont, acc}
+               {:ok, event} -> {:cont, [event | acc]}
+               {:error, reason} -> {:halt, {:error, reason}}
+             end
+           end),
+         do: {:ok, Enum.reverse(events)}
+  end
+
+  defp maybe_create_events(feature, event, result, context) do
+    maybe_create_events(feature, event, [result], context)
   end
 
   defp maybe_create_event(feature, event, result, context) do
