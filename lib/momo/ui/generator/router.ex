@@ -13,7 +13,10 @@ defmodule Momo.Ui.Generator.Router do
 
     not_found_view = ui.not_found_view
 
-    routes = Enum.map(ui.namespaces, &route(ui, &1))
+    routes =
+      ui
+      |> Momo.Ui.namespaces()
+      |> Enum.map(&route(ui, &1))
 
     quote do
       defmodule unquote(router_module) do
