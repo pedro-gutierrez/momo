@@ -5,6 +5,7 @@ defmodule Blogs.Ui do
   ui do
     namespaces do
       Blogs.Ui.Namespaces.Root
+      Blogs.Ui.Namespaces.Admin
     end
   end
 end

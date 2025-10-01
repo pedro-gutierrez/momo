@@ -7,5 +7,15 @@ defmodule Momo.Ui.UiTest do
 
       assert conn.resp_body =~ "Blogs Index Page"
     end
+
+    test "returns the list of routes sorted" do
+      routes = Blogs.Ui.routes()
+
+      assert [
+               {:get, "/admin/"},
+               {:get, "/"},
+               {:get, "/blogs"}
+             ] == routes
+    end
   end
 end
