@@ -50,6 +50,7 @@ defmodule Blogs.Accounts do
     mappings do
       Blogs.Accounts.Mappings.UserRegisteredFromUser
       Blogs.Accounts.Mappings.UserIdFromMap
+      Blogs.Accounts.Mappings.CredentialExpiredFromCredential
     end
   end
 end
