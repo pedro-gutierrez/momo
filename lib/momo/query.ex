@@ -105,7 +105,7 @@ defmodule Momo.Query do
         params
         |> query.handle(context)
         |> maybe_map_result(query)
-        |> maybe_unwrap_result(query)
+        |> wrap_result()
       else
         context
         |> query.scope()
@@ -126,7 +126,7 @@ defmodule Momo.Query do
       context
       |> query.handle()
       |> maybe_map_result(query)
-      |> maybe_unwrap_result(query)
+      |> wrap_result()
     else
       context
       |> query.scope()
@@ -158,14 +158,26 @@ defmodule Momo.Query do
   defp maybe_map_result(item, query) do
     case query.model() do
       nil -> item
-      model -> map_result(item, query, model)
+      model -> maybe_map_result(item, query, model)
     end
   end
 
-  defp map_result(item, query, model), do: query.feature().map(Map, model, item)
+  defp maybe_map_result(nil, _query, _model), do: nil
 
-  defp maybe_unwrap_result({:ok, items}, _query) when is_list(items), do: items
-  defp maybe_unwrap_result(other, _query), do: other
+  defp maybe_map_result(item, query, model) do
+    if same_model?(item, model) do
+      item
+    else
+      query.feature().map(Map, model, item)
+    end
+  end
+
+  defp same_model?(item, model), do: is_struct(item) && item.__struct__ == model
+
+  defp wrap_result(nil), do: {:error, :not_found}
+  defp wrap_result(items) when is_list(items), do: items
+  defp wrap_result({:ok, _} = result), do: result
+  defp wrap_result(item), do: {:ok, item}
 
   @doc """
   Builds a query by taking the parameters and adding them as filters
