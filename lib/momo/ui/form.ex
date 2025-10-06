@@ -43,7 +43,6 @@ defmodule Momo.Ui.Form do
       other ->
         other
     end
-    |> IO.inspect()
   end
 
   defp redirect(form, params, result) do
