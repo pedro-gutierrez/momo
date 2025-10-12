@@ -164,20 +164,26 @@ defmodule Momo.Query do
 
   defp maybe_map_result(nil, _query, _model), do: nil
 
+  defp maybe_map_result(items, query, model) when is_list(items),
+    do: Enum.map(items, &maybe_map_result(&1, query, model))
+
   defp maybe_map_result(item, query, model) do
     if same_model?(item, model) do
       item
     else
-      query.feature().map(Map, model, item)
+      with {:ok, mapped} <- query.feature().map(Map, model, item) do
+        mapped
+      end
     end
   end
 
   defp same_model?(item, model), do: is_struct(item) && item.__struct__ == model
 
   defp wrap_result(nil), do: {:error, :not_found}
+  defp wrap_result(item) when is_struct(item), do: {:ok, item}
   defp wrap_result(items) when is_list(items), do: items
-  defp wrap_result({:ok, _} = result), do: result
-  defp wrap_result(item), do: {:ok, item}
+  defp wrap_result({:ok, items}) when is_list(items), do: items
+  defp wrap_result({:ok, item}) when is_struct(item), do: {:ok, item}
 
   @doc """
   Builds a query by taking the parameters and adding them as filters
