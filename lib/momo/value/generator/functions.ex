@@ -13,6 +13,7 @@ defmodule Momo.Value.Generator.Functions do
       def decode(json), do: Momo.Value.decode(__MODULE__, json)
       def new(params), do: Momo.Value.new(__MODULE__, params)
       def validate(params), do: Momo.Value.validate(__MODULE__, params)
+      def plain_map(value), do: Momo.Maps.string_keys(value)
     end
   end
 end
