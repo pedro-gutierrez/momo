@@ -5,12 +5,12 @@ defmodule Momo.Mapping.Parser do
   alias Momo.Mapping
   alias Momo.Mapping.Field
 
-  import Momo.Feature.Naming
+  import Momo.Naming
 
   def parse({:mapping, attrs, children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
 
     from = Keyword.fetch!(attrs, :from)
     to = Keyword.fetch!(attrs, :to)
@@ -25,7 +25,7 @@ defmodule Momo.Mapping.Parser do
 
     %Mapping{
       name: name,
-      feature: feature,
+      app: app,
       from: from,
       to: to,
       fields: fields

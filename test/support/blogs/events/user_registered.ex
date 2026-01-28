@@ -1,0 +1,10 @@
+defmodule Blogs.Events.UserRegistered do
+  @moduledoc false
+
+  use Momo.Event
+
+  event version: 1 do
+    field :user_id, type: :id, required: true
+    field :registered_at, type: :datetime, required: true
+  end
+end

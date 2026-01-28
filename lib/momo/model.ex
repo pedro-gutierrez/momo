@@ -24,7 +24,8 @@ defmodule Momo.Model do
 
   defstruct [
     :module,
-    :feature,
+    :app,
+    :prefix,
     :repo,
     :name,
     :plural,

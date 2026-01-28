@@ -1,7 +1,7 @@
 defmodule Momo.EnumTest do
   use ExUnit.Case
 
-  alias Blogs.Accounts.Enums.CredentialType
+  alias Blogs.Enums.CredentialType
 
   describe "values/0" do
     test "returns all values" do

@@ -3,13 +3,13 @@ defmodule Momo.Model.Generator.DeleteFunction do
   @behaviour Diesel.Generator
 
   @impl true
-  def generate(model, _) do
+  def generate(_model, _) do
     quote do
       def delete(model) do
         with {:ok, _} <-
                model
                |> delete_changeset()
-               |> unquote(model.feature).repo().delete(),
+               |> __MODULE__.app().repo().delete(),
              do: :ok
       end
     end

@@ -132,8 +132,8 @@ defmodule Momo.Model.Generator.Changesets do
   end
 
   defp inclusion_validations(model) do
-    for %{name: name, in: enum} when not is_nil(nil) <- model.attributes do
-      allowed_values = enum.values()
+    for %{name: name, in: enum} when not is_nil(enum) and enum != [] <- model.attributes do
+      allowed_values = if is_list(enum), do: enum, else: enum.values()
 
       quote do
         changes = validate_inclusion(changes, unquote(name), unquote(allowed_values))

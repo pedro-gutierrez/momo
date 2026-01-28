@@ -5,12 +5,12 @@ defmodule Momo.Event.Parser do
   alias Momo.Event
   alias Momo.Event.Field
 
-  import Momo.Feature.Naming
+  import Momo.Naming
 
   def parse({:event, attrs, children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
 
     version = Keyword.get(attrs, :version, 1)
 
@@ -28,7 +28,7 @@ defmodule Momo.Event.Parser do
 
     %Event{
       name: name,
-      feature: feature,
+      app: app,
       version: version,
       fields: fields
     }

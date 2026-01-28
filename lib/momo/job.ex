@@ -40,10 +40,9 @@ defmodule Momo.Job do
       ) do
     flow = Module.concat([flow])
     command = Module.concat([command])
-    feature = command.feature()
 
     with {:ok, params} <- Jason.decode(params),
-         {:ok, _} <- apply(feature, command.fun_name(), [params]),
+         {:ok, _} <- command.execute(params, %{authorization: :skip}),
          :ok <- flow.step_completed(id, command) do
       handle_success(flow: flow)
     else

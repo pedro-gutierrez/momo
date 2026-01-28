@@ -2,8 +2,6 @@ defmodule Momo.Model.Generator.EctoSchema do
   @moduledoc false
   @behaviour Diesel.Generator
 
-  alias Momo.Naming
-
   @impl true
   def generate(model, _) do
     quote do
@@ -12,7 +10,6 @@ defmodule Momo.Model.Generator.EctoSchema do
       import Ecto.Query
 
       unquote(primary_key(model))
-      unquote(prefix(model))
 
       schema unquote(table_name(model)) do
         (unquote_splicing(
@@ -37,14 +34,6 @@ defmodule Momo.Model.Generator.EctoSchema do
 
     quote do
       @primary_key {unquote(column), unquote(datatype), [autogenerate: false]}
-    end
-  end
-
-  def prefix(model) do
-    prefix = Naming.name(model.feature)
-
-    quote do
-      @schema_prefix unquote(prefix)
     end
   end
 

@@ -6,12 +6,12 @@ defmodule Momo.Query.Parser do
   alias Momo.Query.Policy
   alias Momo.Query.Sort
 
-  import Momo.Feature.Naming
+  import Momo.Naming
 
   def parse({:query, attrs, children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
 
     params = Keyword.fetch!(attrs, :params)
     model = Keyword.fetch!(attrs, :returns)
@@ -44,7 +44,7 @@ defmodule Momo.Query.Parser do
     %Query{
       name: name,
       debug: debug,
-      feature: feature,
+      app: app,
       params: params,
       model: model,
       policies: policies,

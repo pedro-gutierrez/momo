@@ -115,7 +115,7 @@ defmodule Momo.Scope do
   end
 
   defp do_filter(model, binding, [:**, field | rest], op, value, builder) do
-    case model.feature().get_shortest_path(model.name(), field) do
+    case model.app().get_shortest_path(model.name(), field) do
       [] ->
         raise ArgumentError, "no path to #{inspect(field)} in model #{inspect(model)}"
 

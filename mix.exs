@@ -8,6 +8,7 @@ defmodule Momo.MixProject do
       app: :momo,
       version: @version,
       elixir: "~> 1.14",
+      aliases: aliases(),
       elixirc_paths: elixirc_paths(),
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
@@ -22,6 +23,12 @@ defmodule Momo.MixProject do
       ],
       deps: deps(),
       docs: docs()
+    ]
+  end
+
+  def aliases do
+    [
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 

@@ -3,7 +3,33 @@ defmodule Momo.Naming do
   Naming conventions
   """
 
-  @doc false
+  @doc """
+  Returns the prefix for the given module name.
+
+  The prefix is the top level module, in most of the cases, your application module.
+
+  ## Examples
+
+      iex> Momo.Naming.prefix(MyApp.MyModel)
+      MyApp
+  """
+  def prefix(module) do
+    module
+    |> Module.split()
+    |> List.first()
+  end
+
+  @doc """
+  Returns the name for the given module.
+
+  The name is the last module name, in most of the cases, the model name.
+
+  ## Examples
+
+      iex> Momo.Naming.name(MyApp.User)
+      :user
+
+  """
   def name(model) do
     model
     |> last_module()
@@ -59,51 +85,23 @@ defmodule Momo.Naming do
   end
 
   @doc false
-  def feature(model) do
-    model
-    |> Module.split()
-    |> Enum.reverse()
-    |> tl()
-    |> Enum.reverse()
-    |> Module.concat()
+  def app(model) do
+    prefix =
+      model
+      |> Module.split()
+      |> List.first()
+
+    Module.concat([prefix, "App"])
   end
 
   @doc false
-  def feature_module(caller) do
-    case caller |> Module.split() |> Enum.reverse() do
-      [_, kind | rest]
-      when kind in [
-             "Commands",
-             "Handlers",
-             "Queries",
-             "Events",
-             "Subscriptions",
-             "Mappings",
-             "Flows"
-           ] ->
-        rest |> Enum.reverse() |> Module.concat()
+  def repo(app) do
+    prefix =
+      app
+      |> Module.split()
+      |> List.first()
 
-      other ->
-        raise "Invalid module name #{inspect(caller)}: #{inspect(other)}"
-    end
-  end
-
-  @doc false
-  def repo(feature) do
-    feature
-    |> Module.split()
-    |> Enum.drop(-1)
-    |> Kernel.++([Repo])
-    |> Module.concat()
-  end
-
-  @doc false
-  def app(feature) do
-    feature
-    |> Module.split()
-    |> Enum.drop(-1)
-    |> Kernel.++([App])
-    |> Module.concat()
+    Module.concat([prefix, "Repo"])
   end
 
   @doc false

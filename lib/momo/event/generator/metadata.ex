@@ -7,7 +7,7 @@ defmodule Momo.Event.Generator.Metadata do
     quote do
       def fields, do: unquote(Macro.escape(event.fields))
       def version, do: unquote(event.version)
-      def feature, do: unquote(event.feature)
+      def app, do: unquote(event.app)
       def name, do: unquote(event.name)
     end
   end

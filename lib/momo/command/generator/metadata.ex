@@ -10,7 +10,7 @@ defmodule Momo.Command.Generator.Metadata do
       def atomic?, do: unquote(command.atomic?)
       def params, do: unquote(command.params)
       def returns, do: unquote(command.returns)
-      def feature, do: unquote(command.feature)
+      def app, do: unquote(command.app)
       def policies, do: unquote(Macro.escape(command.policies))
       def events, do: unquote(Macro.escape(command.events))
     end

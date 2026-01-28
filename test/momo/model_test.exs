@@ -1,19 +1,131 @@
 defmodule Momo.ModelTest do
   use Momo.DataCase
 
-  alias Blogs.Accounts
-  alias Blogs.Accounts.User
-  alias Blogs.Accounts.Onboarding
-  alias Blogs.Accounts.Credential
+  alias Blogs
+  alias Blogs.Author
+  alias Blogs.Blog
+  alias Blogs.Digest
+  alias Blogs.User
+  alias Blogs.Theme
+  alias Blogs.Onboarding
+  alias Blogs.Credential
+  alias Blogs.Queries.GetOnboardings
 
-  describe "describe field/1" do
+  describe "name/0" do
+    test "return the atom representation of the model" do
+
+      assert :blog == Blog.name()
+    end
+  end
+
+  describe "field/1" do
     test "finds built-in fields" do
       assert {:ok, field} = User.field(:inserted_at)
       assert field.name == :inserted_at
     end
   end
 
+  describe "attributes/0" do
+    test "return  a list of attributes" do
+      for attr <- Blog.attributes() do
+        assert {:ok, %Momo.Model.Attribute{} = ^attr} = Blog.field(attr.name)
+      end
+    end
+
+  end
+
+
+  describe "keys/0" do
+    test "returns composite keys" do
+      assert [key] = Blog.keys()
+      assert Blog == key.model
+      assert [%Momo.Model.Relation{name: :author}, %Momo.Model.Attribute{name: :name}] = key.fields
+      assert key.unique?
+    end
+
+    test "returns unique keys" do
+      assert [key] = Theme.keys()
+      assert key.unique?
+    end
+  end
+
+  describe "primary_key/0" do
+    test "returns its name and type" do
+      pk = User.primary_key()
+      assert :id == pk.name
+      assert :id == pk.kind
+      assert :binary_id == pk.storage
+    end
+  end
+
+  describe "parents/0" do
+    test "returns relations" do
+      for rel <- Blog.parents() do
+        assert {:ok, %Momo.Model.Relation{} = ^rel} = Blog.field(rel.name)
+      end
+    end
+  end
+
+  describe "virtual?/0" do
+    test "returns whether the model is managed" do
+      assert Digest.virtual?()
+    end
+  end
+
   describe "create/1" do
+    test "creates models" do
+      attrs = %{
+        "id" => Ecto.UUID.generate(),
+        "name" => "john"
+      }
+
+      assert {:ok, author} = Author.create(attrs)
+      assert author.name == "john"
+    end
+
+    test "supports attributes as keyword lists" do
+      assert {:ok, author} = Author.create(id: Ecto.UUID.generate(), name: "john")
+      assert author.name == "john"
+    end
+
+    test "support attribute with atom keys" do
+      attrs = %{
+        id: Ecto.UUID.generate(),
+        name: "john"
+      }
+
+      assert {:ok, author} = Author.create(attrs)
+      assert author.name == "john"
+    end
+
+
+    test "validates inclusion of attribute values" do
+      attrs = %{
+        "id" => Ecto.UUID.generate(),
+        "name" => "other"
+      }
+
+      assert {:error, changeset} = Theme.create(attrs)
+      assert errors_on(changeset) == %{name: ["is invalid"]}
+    end
+
+    test "validates ids" do
+      attrs = %{
+        external_id: "1",
+        email: "foo@bar.com",
+        id: "2"
+      }
+
+      assert {:error, changeset} = User.create(attrs)
+
+      assert errors_on(changeset) == %{
+               external_id: ["is not a valid UUID"],
+               id: ["is not a valid UUID"]
+             }
+    end
+
+
+
     test "allows timestamps to be manually modified" do
       two_days_ago = DateTime.utc_now() |> DateTime.add(-2 * 24 * 3600, :second)
 
@@ -72,11 +184,16 @@ defmodule Momo.ModelTest do
 
     test "merges records when the unique key involves a parent relation" do
       assert {:ok, user} =
-               Blogs.Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+               User.create(
+                 id: uuid(),
+                 email: "foo@bar",
+                 external_id: uuid(),
+                 public: true
+               )
 
       assert {:ok, cred1} =
-               Accounts.create_credential(
-                 user: user,
+               Credential.create(
+                 user_id: user.id,
                  name: "password",
                  value: "foo",
                  enabled: true,
@@ -84,8 +201,8 @@ defmodule Momo.ModelTest do
                )
 
       assert {:ok, cred2} =
-               Accounts.create_credential(
-                 user: user,
+               Credential.create(
+                 user_id: user.id,
                  name: "password",
                  value: "bar",
                  enabled: false,
@@ -97,7 +214,7 @@ defmodule Momo.ModelTest do
       assert cred2.value == "bar"
       refute cred2.enabled
 
-      assert {:ok, ^cred2} = Blogs.Accounts.Credential.fetch(cred1.id)
+      assert {:ok, ^cred2} = Blogs.Credential.fetch(cred1.id)
     end
 
     test "executes computations on fields" do
@@ -108,33 +225,44 @@ defmodule Momo.ModelTest do
   end
 
   describe "create_many/1" do
+    test "creates many models at once" do
+      authors = [%{name: "a1", profile: "publisher"}, %{name: "a2", profile: "publisher"}]
+
+      assert :ok = Author.create_many(authors)
+    end
+
     test "merges records on conflict when the strategy is set" do
       user_id = uuid()
 
-      o1 = [
+      onboarding1 = [
         id: uuid(),
         user_id: user_id,
         steps_pending: 2
       ]
 
-      o2 = [
+      onboarding2 = [
         id: uuid(),
         user_id: user_id,
         steps_pending: 3
       ]
 
-      assert :ok = Onboarding.create_many([o1])
-      assert :ok = Onboarding.create_many([o2])
+      assert :ok = Onboarding.create_many([onboarding1])
+      assert :ok = Onboarding.create_many([onboarding2])
 
-      assert [onboarding] = Accounts.get_onboardings()
+      assert [onboarding] = GetOnboardings.execute()
       assert onboarding.steps_pending == 3
     end
   end
 
   describe "read functions" do
     test "preload children relation when the option is set" do
-      assert {:ok, user} =
-               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+      {:ok, user} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          external_id: uuid(),
+          public: true
+        )
 
       assert {:ok, user} = User.fetch(user.id)
       assert user.credentials == []
@@ -144,12 +272,17 @@ defmodule Momo.ModelTest do
     end
 
     test "do not preload relations by default" do
-      assert {:ok, user} =
-               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+      {:ok, user} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          external_id: uuid(),
+          public: true
+        )
 
       assert {:ok, credential} =
-               Accounts.create_credential(
-                 user: user,
+               Credential.create(
+                 user_id: user.id,
                  name: "password",
                  value: "bar",
                  enabled: false,
@@ -166,8 +299,13 @@ defmodule Momo.ModelTest do
 
   describe "plain_map/1" do
     test "turns a model into a plain map with string keys" do
-      assert {:ok, user} =
-               Accounts.create_user(email: "foo@bar", external_id: uuid(), public: true)
+      {:ok, user} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          external_id: uuid(),
+          public: true
+        )
 
       assert %{
                "email" => user.email,

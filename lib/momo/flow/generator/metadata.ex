@@ -5,7 +5,7 @@ defmodule Momo.Flow.Generator.Metadata do
   @impl true
   def generate(flow, _opts) do
     quote do
-      def feature, do: unquote(flow.feature)
+      def app, do: unquote(flow.app)
       def fun_name, do: unquote(flow.fun_name)
       def create_model_fun_name, do: unquote(flow.create_model_fun_name)
       def model, do: unquote(flow.model)

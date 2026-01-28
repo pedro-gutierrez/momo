@@ -11,10 +11,9 @@ defmodule MigrationHelper do
   @doc false
   def generate_migrations(existing \\ []) do
     app = :momo |> Application.fetch_env!(Momo) |> Keyword.fetch!(:app)
-    features = app.features()
 
     existing
-    |> Migrations.missing(features)
+    |> Migrations.missing(app)
     |> Migration.encode()
     |> Migration.format()
     |> Enum.join("")

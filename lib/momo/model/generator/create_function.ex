@@ -9,8 +9,9 @@ defmodule Momo.Model.Generator.CreateFunction do
   def generate(model, _) do
     [
       with_defaults(),
-      with_map_args(model),
+      with_struct_args(model),
       with_keyword_args(model),
+      with_map_args(model),
       batch_fun(model)
     ]
   end
@@ -24,19 +25,19 @@ defmodule Momo.Model.Generator.CreateFunction do
   defp with_map_args(model) do
     conflict_opts = on_conflict_opts(model) || []
 
-    quote do
+    quote location: :keep do
       def create(attrs, opts) when is_map(attrs) do
         opts = Keyword.merge(unquote(conflict_opts), opts)
 
         %__MODULE__{}
         |> insert_changeset(attrs, opts)
-        |> unquote(model.feature).repo().insert(opts)
+        |> __MODULE__.app().repo().insert(opts)
       end
     end
   end
 
   defp with_keyword_args(_model) do
-    quote do
+    quote location: :keep do
       def create(attrs, opts) when is_list(attrs) do
         attrs
         |> Map.new()
@@ -45,10 +46,20 @@ defmodule Momo.Model.Generator.CreateFunction do
     end
   end
 
+  defp with_struct_args(_model) do
+    quote location: :keep do
+      def create(attrs, opts) when is_struct(attrs) do
+        attrs
+        |> Map.from_struct()
+        |> create(opts)
+      end
+    end
+  end
+
   defp batch_fun(model) do
     conflict_opts = on_conflict_opts(model) || []
 
-    quote do
+    quote location: :keep do
       def create_many(items, opts \\ []) when is_list(items) do
         opts = Keyword.merge(unquote(conflict_opts), opts)
         now = DateTime.utc_now()
@@ -63,7 +74,7 @@ defmodule Momo.Model.Generator.CreateFunction do
             |> Map.put_new(:updated_at, now)
           end
 
-        unquote(model.feature).repo().insert_all(__MODULE__, items, opts)
+        __MODULE__.app().repo().insert_all(__MODULE__, items, opts)
 
         :ok
       end

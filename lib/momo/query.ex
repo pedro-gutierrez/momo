@@ -15,7 +15,7 @@ defmodule Momo.Query do
 
   defstruct [
     :name,
-    :feature,
+    :app,
     :params,
     :sorting,
     :model,
@@ -61,7 +61,7 @@ defmodule Momo.Query do
     model = query.model()
 
     with false <- Enum.empty?(query.policies()),
-         {:ok, [_ | _] = roles} <- query.feature().app().roles_from_context(context) do
+         {:ok, [_ | _] = roles} <- query.app().roles_from_context(context) do
       scope(model, roles, query.policies(), context)
     else
       true -> model
@@ -142,7 +142,7 @@ defmodule Momo.Query do
   defp params(params) when is_map(params), do: params
 
   defp call_repo(queriable, query, _context) do
-    repo = query.feature().repo()
+    repo = query.app().repo()
     Logger.debug("Executing query", query: query, computed: inspect(queriable))
 
     if query.many?() do
@@ -171,7 +171,7 @@ defmodule Momo.Query do
     if same_model?(item, model) do
       item
     else
-      with {:ok, mapped} <- query.feature().map(Map, model, item) do
+      with {:ok, mapped} <- query.app().map(Map, model, item) do
         mapped
       end
     end

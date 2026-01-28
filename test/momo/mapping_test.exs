@@ -1,9 +1,9 @@
 defmodule Momo.MappingTest do
   use ExUnit.Case
 
-  alias Blogs.Accounts.Mappings.UserRegisteredFromUser
-  alias Blogs.Accounts.User
-  alias Blogs.Accounts.Events.UserRegistered
+  alias Blogs.Mappings.UserRegisteredFromUser
+  alias Blogs.User
+  alias Blogs.Events.UserRegistered
 
   describe "map/1" do
     test "copies data from a source value to a target value" do

@@ -10,14 +10,14 @@ defmodule Momo.Model.Generator.EditFunction do
     ]
   end
 
-  defp with_map_args(model) do
+  defp with_map_args(_model) do
     quote do
       def edit(model, attrs, opts \\ [])
 
       def edit(model, attrs, opts) when is_map(attrs) do
         model
         |> update_changeset(attrs, opts)
-        |> unquote(model.feature).repo().update()
+        |> __MODULE__.app().repo().update()
       end
     end
   end

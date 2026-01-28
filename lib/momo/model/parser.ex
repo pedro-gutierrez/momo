@@ -28,11 +28,12 @@ defmodule Momo.Model.Parser do
   end
 
   defp model(caller, attrs) do
-    feature = feature(caller)
+    app = app(caller)
 
     %Model{
-      feature: feature,
-      repo: repo(feature),
+      app: app,
+      prefix: prefix(app),
+      repo: repo(app),
       name: name(caller),
       plural: plural(caller),
       module: caller,
@@ -59,7 +60,7 @@ defmodule Momo.Model.Parser do
         computation =
           if opts[:computed] do
             computation = Macro.camelize("#{model.name}_#{attr_name}")
-            Module.concat([model.feature, Computations, computation])
+            Module.concat([model.prefix, Computations, computation])
           end
 
         %Attribute{
@@ -94,7 +95,6 @@ defmodule Momo.Model.Parser do
         parent_module = relation_target_module(attrs, children)
         preloaded = Keyword.get(attrs, :preloaded, false)
 
-        ensure_same_feature!(model.module, parent_module, :belongs_to)
         required = Keyword.get(attrs, :required, true)
 
         name = name(parent_module)
@@ -134,8 +134,6 @@ defmodule Momo.Model.Parser do
       for {:has_many, attrs, children} <- definition do
         child_module = relation_target_module(attrs, children)
         preloaded = Keyword.get(attrs, :preloaded, false)
-
-        ensure_same_feature!(model.module, child_module, :has_many)
 
         name = plural(child_module)
 
@@ -353,15 +351,6 @@ defmodule Momo.Model.Parser do
     %{model | attributes: attributes}
   end
 
-  defp ensure_same_feature!(from, to, kind) do
-    from_feature = feature(from)
-    to_feature = feature(to)
-
-    if from_feature != to_feature do
-      raise "invalid relation of kind #{inspect(kind)} from #{inspect(from)} (in feature#{inspect(from_feature)}) to #{inspect(to)} (in feature #{inspect(to_feature)}). Both models must be in the same feature."
-    end
-  end
-
   defp summary_model(%Model{} = model), do: summary_model(model.module)
 
   defp summary_model(module) do
@@ -370,7 +359,7 @@ defmodule Momo.Model.Parser do
       name: name(module),
       table_name: table_name(module),
       plural: plural(module),
-      feature: feature(module)
+      app: app(module)
     }
   end
 end

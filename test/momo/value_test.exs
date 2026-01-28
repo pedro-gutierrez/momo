@@ -2,8 +2,8 @@ defmodule Momo.ValueTest do
   use ExUnit.Case
   import Momo.ErrorsHelper
 
-  alias Blogs.Accounts.Values.UserEmails
-  alias Blogs.Accounts.Values.UserId
+  alias Blogs.Values.UserEmails
+  alias Blogs.Values.UserId
 
   describe "values" do
     test "don't have an id" do

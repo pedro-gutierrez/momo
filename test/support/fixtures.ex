@@ -1,8 +1,7 @@
 defmodule Momo.Fixtures do
   @moduledoc false
 
-  alias Blogs.Accounts
-  alias Blogs.Publishing
+  alias Blogs.{User, Author, Blog, Post, Comment}
 
   @doc "A convenience function to generate uuids in tests"
   def uuid, do: Ecto.UUID.generate()
@@ -42,17 +41,17 @@ defmodule Momo.Fixtures do
 
   def comments(context) do
     {:ok, user} =
-      Accounts.User.create(
+      User.create(
         id: Ecto.UUID.generate(),
         email: "foo@bar",
         public: true,
         external_id: uuid()
       )
 
-    {:ok, author} = Publishing.Author.create(id: user.id, name: "foo")
+    {:ok, author} = Author.create(id: user.id, name: "foo")
 
     {:ok, blog} =
-      Publishing.Blog.create(
+      Blog.create(
         id: uuid(),
         published: true,
         author_id: author.id,
@@ -60,7 +59,7 @@ defmodule Momo.Fixtures do
       )
 
     {:ok, post} =
-      Publishing.Post.create(
+      Post.create(
         id: uuid(),
         author_id: author.id,
         blog_id: blog.id,
@@ -72,7 +71,7 @@ defmodule Momo.Fixtures do
       )
 
     {:ok, comment1} =
-      Publishing.Comment.create(
+      Comment.create(
         id: uuid(),
         post_id: post.id,
         author_id: author.id,
@@ -81,7 +80,7 @@ defmodule Momo.Fixtures do
       )
 
     {:ok, comment2} =
-      Publishing.Comment.create(
+      Comment.create(
         id: uuid(),
         post_id: post.id,
         author_id: author.id,
@@ -90,7 +89,7 @@ defmodule Momo.Fixtures do
       )
 
     {:ok, comment3} =
-      Publishing.Comment.create(
+      Comment.create(
         id: uuid(),
         post_id: post.id,
         author_id: author.id,

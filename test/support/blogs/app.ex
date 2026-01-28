@@ -3,10 +3,69 @@ defmodule Blogs.App do
   use Momo.App, otp_app: :momo
 
   app roles: "current_user.roles" do
-    features do
-      Blogs.Accounts
-      Blogs.Notifications
-      Blogs.Publishing
+    models do
+      Blogs.User
+      Blogs.Credential
+      Blogs.Onboarding
+      Blogs.Digest
+      Blogs.Author
+      Blogs.Blog
+      Blogs.Comment
+      Blogs.Post
+      Blogs.Theme
+    end
+
+    commands do
+      Blogs.Commands.EnableUser
+      Blogs.Commands.ExpireCredentials
+      Blogs.Commands.RegisterUser
+      Blogs.Commands.RemindPassword
+      Blogs.Commands.RequestFeedback
+      Blogs.Commands.SendWelcomeEmail
+    end
+
+    queries do
+      Blogs.Queries.GetOnboardings
+      Blogs.Queries.GetUserByEmail
+      Blogs.Queries.GetUserIds
+      Blogs.Queries.GetUsers
+      Blogs.Queries.GetUsersByEmails
+    end
+
+    events do
+      Blogs.Events.CredentialExpired
+      Blogs.Events.PasswordRemindedSent
+      Blogs.Events.UserOnboarded
+      Blogs.Events.UserRegistered
+      Blogs.Events.UsersLocked
+    end
+
+    flows do
+      Blogs.Flows.Onboarding
+    end
+
+    subscriptions do
+      Blogs.Subscriptions.UserOnboardings
+      Blogs.Subscriptions.UserRegistrations
+    end
+
+    mappings do
+      Blogs.Mappings.CredentialExpiredFromCredential
+      Blogs.Mappings.UserIdFromMap
+      Blogs.Mappings.UserRegisteredFromUser
+    end
+
+    values do
+      Blogs.Values.UserEmail
+      Blogs.Values.UserEmails
+      Blogs.Values.UserId
+    end
+
+    scopes do
+      Blogs.Scopes.IsPublic
+      Blogs.Scopes.NotLocked
+      Blogs.Scopes.Self
+      Blogs.Scopes.SelfAndNotLocked
     end
   end
 end

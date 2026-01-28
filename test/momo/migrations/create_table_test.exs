@@ -5,8 +5,8 @@ defmodule Momo.Migrations.CreateTableTest do
   describe "migrations" do
     test "create tables in the right context" do
       migrations = generate_migrations()
-      assert migrations =~ "create(table(:blogs, prefix: :publishing"
-      assert migrations =~ "create(table(:users, prefix: :accounts"
+      assert migrations =~ "create(table(:blogs, prefix: nil"
+      assert migrations =~ "create(table(:users, prefix: nil"
     end
 
     test "do not create tables if they already exist in the context" do
@@ -16,9 +16,9 @@ defmodule Momo.Migrations.CreateTableTest do
           use Ecto.Migration
 
           def up do
-            create table(:blogs, prefix: :publishing, primary_key: false) do
+            create table(:blogs, prefix: nil, primary_key: false) do
             end
-            create table(:users, prefix: :accounts, primary_key: false) do
+            create table(:users, prefix: nil, primary_key: false) do
             end
           end
         end
@@ -28,24 +28,6 @@ defmodule Momo.Migrations.CreateTableTest do
       migrations = generate_migrations(existing)
       refute migrations =~ "create(table(:blogs"
       refute migrations =~ "create(table(:users"
-    end
-
-    test "do create tables if they don't exist in the context" do
-      existing = [
-        """
-        defmodule Momo.Migration.V1 do
-          use Ecto.Migration
-
-          def up do
-            create table(:users, prefix: :other, primary_key: false) do
-            end
-          end
-        end
-        """
-      ]
-
-      migrations = generate_migrations(existing)
-      assert migrations =~ "create(table(:users, prefix: :accounts"
     end
 
     test "store timestamps as utc datetimes" do

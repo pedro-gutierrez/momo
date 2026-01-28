@@ -18,7 +18,7 @@ defmodule Momo.Model.Generator.Metadata do
     attribute_field_names = Enum.map(attributes, & &1.name)
     field_names = attribute_field_names ++ parent_field_names
 
-    quote do
+    quote location: :keep do
       @repo unquote(model.repo)
       def repo, do: @repo
 
@@ -33,7 +33,7 @@ defmodule Momo.Model.Generator.Metadata do
       @keys unquote(Macro.escape(keys))
       @actions unquote(Macro.escape(actions))
 
-      def feature, do: unquote(model.feature)
+      def app, do: unquote(model.app)
       def name, do: unquote(model.name)
       def plural, do: unquote(model.plural)
       def table_name, do: unquote(model.table_name)

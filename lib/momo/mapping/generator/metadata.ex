@@ -8,7 +8,7 @@ defmodule Momo.Mapping.Generator.Metadata do
       def from, do: unquote(mapping.from)
       def to, do: unquote(mapping.to)
       def fields, do: unquote(Macro.escape(mapping.fields))
-      def feature, do: unquote(mapping.feature)
+      def app, do: unquote(mapping.app)
       def name, do: unquote(mapping.name)
     end
   end

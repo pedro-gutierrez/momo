@@ -6,6 +6,14 @@ defmodule Momo.App.Dsl do
     tags: [
       Momo.App.Dsl.Repos,
       Momo.App.Dsl.Endpoints,
-      Momo.App.Dsl.Features
+      Momo.App.Dsl.Models,
+      Momo.App.Dsl.Commands,
+      Momo.App.Dsl.Queries,
+      Momo.App.Dsl.Events,
+      Momo.App.Dsl.Flows,
+      Momo.App.Dsl.Subscriptions,
+      Momo.App.Dsl.Mappings,
+      Momo.App.Dsl.Values,
+      Momo.App.Dsl.Scopes
     ]
 end

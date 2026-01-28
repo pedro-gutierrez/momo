@@ -13,7 +13,7 @@ defmodule Momo.Flow do
 
   import Momo.Maps
 
-  defstruct [:fun_name, :create_model_fun_name, :feature, :model, :params, :event, :steps]
+  defstruct [:fun_name, :create_model_fun_name, :app, :model, :params, :event, :steps]
 
   defmodule Step do
     @moduledoc false
@@ -24,19 +24,18 @@ defmodule Momo.Flow do
   Execute the given flow, with the given parameters and context.
   """
   def execute(flow, params, _context) do
-    feature = flow.feature()
-    create_model_fun_name = flow.create_model_fun_name()
+    model = flow.model()
     count = flow.steps() |> Enum.count()
     attrs = params |> plain_map() |> Map.put(:steps_pending, count)
 
-    with {:ok, model} <- apply(feature, create_model_fun_name, [attrs]) do
+    with {:ok, result} <- model.create(attrs) do
       params = Jason.encode!(params)
 
       flow.steps()
-      |> Enum.map(&[command: &1.command, params: params, flow: flow, id: model.id])
+      |> Enum.map(&[command: &1.command, params: params, flow: flow, id: result.id])
       |> Momo.Job.schedule_all()
 
-      {:ok, model}
+      {:ok, result}
     else
       {:error, _} = error -> error
       other -> {:error, {:invalid_result, other}}
@@ -51,8 +50,8 @@ defmodule Momo.Flow do
          model <- flow.model(),
          event <- flow.event(),
          {:ok, input} <- model.fetch(id),
-         {:ok, event} <- flow.feature().map(model, event, input) do
-      Momo.Feature.publish_events([event], step.feature())
+         {:ok, event} <- flow.app().map(model, event, input) do
+      Momo.App.publish_events([event], step.app())
     else
       n when n > 0 -> :ok
       {:error, _} = error -> error
@@ -62,7 +61,7 @@ defmodule Momo.Flow do
   import Ecto.Query
 
   defp decrement_steps_pending(flow, id) do
-    repo = flow.feature().repo()
+    repo = flow.app().repo()
     model = flow.model()
 
     case model

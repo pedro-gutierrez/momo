@@ -13,14 +13,14 @@ defmodule Momo.Migrations do
     |> Enum.map(&File.read!(&1))
   end
 
-  def missing(existing, features) do
+  def missing(existing, app) do
     existing =
       existing
       |> Enum.map(&Code.string_to_quoted!(&1))
       |> Enum.map(&Migration.decode/1)
       |> Enum.reject(& &1.skip)
 
-    new_state = state_from_features(features)
+    new_state = state_from_app(app)
     old_state = state_from_migrations(existing)
     next_version = next_version(existing)
 
@@ -33,17 +33,10 @@ defmodule Momo.Migrations do
     |> Enum.reduce(State.new(), &Migration.aggregate/2)
   end
 
-  defp state_from_features(features) do
-    state = Enum.reduce(features, State.new(), &state_with_schema/2)
-
-    features
-    |> Enum.flat_map(& &1.models())
+  defp state_from_app(app) do
+    app.models()
     |> Enum.reject(& &1.virtual?())
-    |> Enum.reduce(state, &state_with_model/2)
-  end
-
-  defp state_with_schema(feature, state) do
-    State.add_schema(state, feature.name())
+    |> Enum.reduce(State.new(), &state_with_model/2)
   end
 
   defp state_with_model(model, state) do
@@ -55,14 +48,14 @@ defmodule Momo.Migrations do
 
   defp state_with_table(state, model) do
     table = Table.from_model(model)
-    State.add!(state, table.prefix, :tables, table)
+    State.add!(state, nil, :tables, table)
   end
 
   defp state_with_constraints(state, model) do
     model.parents()
     |> Enum.map(&Constraint.from_relation/1)
     |> Enum.reduce(state, fn constraint, state ->
-      State.add!(state, constraint.prefix, :constraints, constraint)
+      State.add!(state, nil, :constraints, constraint)
     end)
   end
 
@@ -70,7 +63,7 @@ defmodule Momo.Migrations do
     model.keys()
     |> Enum.map(&Index.from_key/1)
     |> Enum.reduce(state, fn index, state ->
-      State.add!(state, index.prefix, :indexes, index)
+      State.add!(state, nil, :indexes, index)
     end)
   end
 

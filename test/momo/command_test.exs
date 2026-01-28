@@ -1,10 +1,10 @@
 defmodule Momo.CommandTest do
   use Momo.DataCase
 
-  alias Blogs.Accounts.Commands.{ExpireCredentials, RemindPassword, RegisterUser}
-  alias Blogs.Accounts.User
-  alias Blogs.Accounts.Values.UserId
-  alias Blogs.Accounts.Events.UserRegistered
+  alias Blogs.Commands.RegisterUser
+  alias Blogs.Commands.RemindPassword
+  alias Blogs.User
+  alias Blogs.Events.UserRegistered
 
   describe "allowed?/1" do
     test "always allows if the command has no policies" do
@@ -45,36 +45,68 @@ defmodule Momo.CommandTest do
   end
 
   describe "execute/2" do
-    test "returns a result and a list of events" do
+    test "applies authorization if the context is empty" do
       params = %User{id: uuid(), email: "test@gmail.com", external_id: uuid()}
       context = %{}
 
-      assert {:ok, user, [event]} = RegisterUser.execute(params, context)
+      assert {:error, :unauthorized} = RegisterUser.execute(params, context)
+    end
 
+    test "applies authorization based on policies" do
+      params = %{email: "test@example.com", external_id: uuid(), id: uuid()}
+      context = %{current_user: %{roles: [:admin]}}
+
+      assert {:error, :unauthorized} == RegisterUser.execute(params, context)
+      assert 0 == Blogs.Repo.aggregate(Blogs.User, :count)
+
+      refute_event_published(UserRegistered)
+    end
+
+
+    test "can skip authorization" do
+      params = %User{id: uuid(), email: "test@gmail.com", external_id: uuid()}
+      context = %{authorization: :skip}
+
+      assert {:ok, user} = RegisterUser.execute(params, context)
       assert user.id == params.id
       assert user.email == params.email
 
-      assert %UserRegistered{} = event
-      assert event.user_id == user.id
-      assert event.registered_at == user.inserted_at
+      assert_event_published(UserRegistered)
     end
 
-    test "returns the input params by default" do
-      params = %UserId{user_id: uuid()}
-      context = %{}
+    test "does not publish events if explicit conditions are matched" do
+      params = %{email: "fake@gmail.com", external_id: uuid(), id: uuid()}
+      context = %{current_user: %{roles: [:guest]}}
 
-      assert {:ok, result, events} = RemindPassword.execute(params, context)
-      assert result == params
-      assert events == []
+      assert {:ok, _user} = RegisterUser.execute(params, context)
+      refute_event_published(UserRegistered)
     end
 
-    test "returns one event per item returned" do
-      params = %UserId{user_id: uuid()}
-      context = %{}
+    test "accepts value structs as parameters" do
+      params = %User{email: "test@example.com", external_id: uuid(), id: uuid()}
+      context = %{current_user: %{roles: [:guest]}}
 
-      assert {:ok, credentials, events} = ExpireCredentials.execute(params, context)
-      assert 2 == length(credentials)
-      assert 2 == length(events)
+      assert {:ok, _user} =  RegisterUser.execute(params, context)
+      refute_event_published(UserRegistered)
     end
+
+    test "accepts keyword lists as parameters" do
+      params = [email: "test@example.com", external_id: uuid(), id: uuid()]
+      context = %{current_user: %{roles: [:guest]}}
+
+      assert {:ok, _user} = RegisterUser.execute(params, context)
+      refute_event_published(UserRegistered)
+    end
+
+    test "rollbacks the transaction if the command is atomic and the handler fails" do
+      params = %{email: "foo@bar.com", external_id: uuid(), id: uuid()}
+      context = %{current_user: %{roles: [:guest]}}
+
+      assert {:error, :invalid_email} = RegisterUser.execute(params, context)
+      assert 0 == Blogs.Repo.aggregate(Blogs.User, :count)
+
+      refute_event_published(UserRegistered)
+    end
+
   end
 end

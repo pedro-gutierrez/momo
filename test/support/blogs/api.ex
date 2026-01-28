@@ -8,7 +8,7 @@ defmodule Blogs.Api do
     end
 
     features do
-      Blogs.Publishing
+      Blogs
     end
   end
 end
