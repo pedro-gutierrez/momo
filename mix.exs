@@ -7,7 +7,7 @@ defmodule Momo.MixProject do
     [
       app: :momo,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.18",
       aliases: aliases(),
       elixirc_paths: elixirc_paths(),
       start_permanent: Mix.env() == :prod,

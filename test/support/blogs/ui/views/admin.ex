@@ -1,4 +1,5 @@
-defmodule Blogs.Ui.Views.Blog do
+
+defmodule Blogs.Ui.Views.Admin do
   @moduledoc false
   use Momo.Ui.View
 
@@ -9,7 +10,7 @@ defmodule Blogs.Ui.Views.Blog do
       end
 
       body do
-        h1 "Welcome to my Blog {{ id }}"
+        h1 "Admin Page"
       end
     end
   end

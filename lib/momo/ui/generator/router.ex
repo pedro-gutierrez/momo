@@ -8,17 +8,11 @@ defmodule Momo.Ui.Generator.Router do
   def generate(ui, opts) do
     caller = opts[:caller_module]
     router_module = Module.concat(caller, Router)
-
     conn = var(:conn)
-
     not_found_view = ui.not_found_view
+    routes = routes(ui)
 
-    routes =
-      ui
-      |> Momo.Ui.namespaces()
-      |> Enum.map(&route(ui, &1))
-
-    quote do
+    quote location: :keep do
       defmodule unquote(router_module) do
         @moduledoc false
         use Plug.Router
@@ -35,10 +29,10 @@ defmodule Momo.Ui.Generator.Router do
 
         unquote_splicing(routes)
 
-        match _ do
-          html = unquote(not_found_view).render(unquote(conn).params)
-          send_html(unquote(conn), html, 404)
-        end
+         match _ do
+           html = unquote(not_found_view).render(unquote(conn).params)
+           send_html(unquote(conn), html, 404)
+         end
 
         defp send_html(conn, body, status \\ 200) do
           conn
@@ -52,11 +46,13 @@ defmodule Momo.Ui.Generator.Router do
     end
   end
 
-  defp route(_ui, ns) do
-    router = Module.concat(ns, Router)
+  defp routes(ui) do
+    for {method, path, handler} <- Momo.Ui.routes(ui) do
 
-    quote do
-      forward unquote(ns).path(), to: unquote(router)
+      quote do
+        match(unquote(path), via: unquote(method), to: unquote(handler))
+      end
+
     end
   end
 end

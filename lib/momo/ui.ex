@@ -21,4 +21,26 @@ defmodule Momo.Ui do
   More specific namespaces are listed first.
   """
   def namespaces(ui), do: Enum.sort_by(ui.namespaces, &byte_size(&1.path()), :desc)
+
+  @doc """
+  Returns all routes configured for the given ui.
+
+  Each route is a tuple {method, path, handler}
+  """
+  def routes(ui) do
+    ui
+    |> namespaces()
+    |> Enum.flat_map(fn ns ->
+       prefix = ns.path()
+
+       for route <- ns.routes() do
+         path = route.path()
+         method = route.method()
+         handler = Module.concat(route, Handler)
+         path = String.replace(prefix <> path, "//", "/")
+
+         {method, path, handler}
+       end
+    end)
+  end
 end
