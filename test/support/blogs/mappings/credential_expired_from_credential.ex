@@ -2,7 +2,7 @@ defmodule Blogs.Mappings.CredentialExpiredFromCredential do
   @moduledoc false
   use Momo.Mapping
 
-  alias Blogs.Model.Credential
+  alias Blogs.Models.Credential
   alias Blogs.Events.CredentialExpired
 
   mapping from: Credential, to: CredentialExpired do

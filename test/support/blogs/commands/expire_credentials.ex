@@ -3,7 +3,7 @@ defmodule Blogs.Commands.ExpireCredentials do
   use Momo.Command
 
   alias Blogs.Values.UserId
-  alias Blogs.Credential
+  alias Blogs.Models.Credential
   alias Blogs.Events.CredentialExpired
 
   command params: UserId, returns: Credential, many: true do

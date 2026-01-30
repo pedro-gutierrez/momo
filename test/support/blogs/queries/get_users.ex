@@ -2,7 +2,7 @@ defmodule Blogs.Queries.GetUsers do
   @moduledoc false
   use Momo.Query
 
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Scopes.IsPublic
 
   query returns: User, many: true do

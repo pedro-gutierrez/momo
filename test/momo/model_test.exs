@@ -2,13 +2,15 @@ defmodule Momo.ModelTest do
   use Momo.DataCase
 
   alias Blogs
-  alias Blogs.Author
-  alias Blogs.Blog
-  alias Blogs.Digest
-  alias Blogs.User
-  alias Blogs.Theme
-  alias Blogs.Onboarding
-  alias Blogs.Credential
+  alias Blogs.Models.{
+  Author,
+ Blog,
+ Digest,
+ User,
+ Theme,
+ Onboarding,
+ Credential}
+
   alias Blogs.Queries.GetOnboardings
 
   describe "name/0" do
@@ -214,7 +216,7 @@ defmodule Momo.ModelTest do
       assert cred2.value == "bar"
       refute cred2.enabled
 
-      assert {:ok, ^cred2} = Blogs.Credential.fetch(cred1.id)
+      assert {:ok, ^cred2} = Blogs.Models.Credential.fetch(cred1.id)
     end
 
     test "executes computations on fields" do

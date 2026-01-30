@@ -1,4 +1,4 @@
-defmodule Blogs.Digest do
+defmodule Blogs.Models.Digest do
   @moduledoc false
   use Momo.Model
 

@@ -3,7 +3,7 @@ defmodule Momo.QueryBuilderTest do
 
   alias Momo.QueryBuilder
 
-  alias Blogs.{Author, Blog, Post}
+  alias Blogs.Models.{Author, Blog, Post}
 
   import Ecto.Query
 

@@ -1,4 +1,4 @@
-defmodule Blogs.Onboarding do
+defmodule Blogs.Models.Onboarding do
   @moduledoc false
   use Momo.Model
 

@@ -1,7 +1,9 @@
 defmodule Momo.QueryTest do
   use Momo.DataCase
 
-  alias Blogs.User
+  alias Blogs.Models.{
+  Onboarding, User
+  }
 
   alias Blogs.Queries.{
     GetOnboardings,
@@ -11,11 +13,8 @@ defmodule Momo.QueryTest do
     GetUserIds
   }
 
-  alias Blogs.Onboarding
 
-  alias Blogs.Values.{
-  UserId
-  }
+  alias Blogs.Values.UserId
 
   alias Momo.Query
 

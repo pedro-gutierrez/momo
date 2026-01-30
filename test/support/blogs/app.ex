@@ -4,15 +4,15 @@ defmodule Blogs.App do
 
   app roles: "current_user.roles" do
     models do
-      Blogs.User
-      Blogs.Credential
-      Blogs.Onboarding
-      Blogs.Digest
-      Blogs.Author
-      Blogs.Blog
-      Blogs.Comment
-      Blogs.Post
-      Blogs.Theme
+      Blogs.Models.User
+      Blogs.Models.Credential
+      Blogs.Models.Onboarding
+      Blogs.Models.Digest
+      Blogs.Models.Author
+      Blogs.Models.Blog
+      Blogs.Models.Comment
+      Blogs.Models.Post
+      Blogs.Models.Theme
     end
 
     commands do

@@ -2,7 +2,7 @@ defmodule Blogs.Mappings.UserRegisteredFromUser do
   @moduledoc false
   use Momo.Mapping
 
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Events.UserRegistered
 
   mapping from: User, to: UserRegistered do

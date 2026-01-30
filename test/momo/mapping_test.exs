@@ -2,7 +2,7 @@ defmodule Momo.MappingTest do
   use ExUnit.Case
 
   alias Blogs.Mappings.UserRegisteredFromUser
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Events.UserRegistered
 
   describe "map/1" do

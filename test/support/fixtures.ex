@@ -1,7 +1,7 @@
 defmodule Momo.Fixtures do
   @moduledoc false
 
-  alias Blogs.{User, Author, Blog, Post, Comment}
+  alias Blogs.Models.{User, Author, Blog, Post, Comment}
 
   @doc "A convenience function to generate uuids in tests"
   def uuid, do: Ecto.UUID.generate()

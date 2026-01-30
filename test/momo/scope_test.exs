@@ -2,8 +2,7 @@ defmodule Momo.ScopeTest do
   use ExUnit.Case
 
   alias Blogs.Scopes.SelfAndNotLocked
-  alias Blogs.{Blog, Post, Comment, Author}
-
+  alias Blogs.Models.{Blog, Post, Comment, Author}
   alias Momo.Scope
   alias Momo.Scope.Expression
 
@@ -249,7 +248,7 @@ defmodule Momo.ScopeTest do
     builder = Scope.query_builder(Post, IsBlogPublished)
 
     assert builder.joins == [
-             {:join, {Blogs.Blog, :post_blog, :id}, {:post, :blog_id}}
+             {:join, {Blogs.Models.Blog, :post_blog, :id}, {:post, :blog_id}}
            ]
 
     assert builder.filters == [{{:post_blog, :published}, :eq, true}]
@@ -271,7 +270,7 @@ defmodule Momo.ScopeTest do
 
     assert builder.joins == [
              {:join, {Blog, :post_blog, :id}, {:post, :blog_id}},
-             {:left_join, {Blogs.Theme, :post_blog_theme, :id}, {:post_blog, :theme_id}}
+             {:left_join, {Blogs.Models.Theme, :post_blog_theme, :id}, {:post_blog, :theme_id}}
            ]
 
     assert builder.filters == [{{:post_blog_theme, :name}, :eq, "Science"}]

@@ -3,7 +3,7 @@ defmodule Blogs.Commands.RegisterUser do
 
   use Momo.Command
 
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Events.UserRegistered
   alias Blogs.Expressions.IsGmailAccount
   alias Blogs.Expressions.LooksFake

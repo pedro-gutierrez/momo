@@ -3,7 +3,7 @@ defmodule Momo.CommandTest do
 
   alias Blogs.Commands.RegisterUser
   alias Blogs.Commands.RemindPassword
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Events.UserRegistered
 
   describe "allowed?/1" do
@@ -57,7 +57,7 @@ defmodule Momo.CommandTest do
       context = %{current_user: %{roles: [:admin]}}
 
       assert {:error, :unauthorized} == RegisterUser.execute(params, context)
-      assert 0 == Blogs.Repo.aggregate(Blogs.User, :count)
+      assert 0 == Blogs.Repo.aggregate(User, :count)
 
       refute_event_published(UserRegistered)
     end
@@ -103,7 +103,7 @@ defmodule Momo.CommandTest do
       context = %{current_user: %{roles: [:guest]}}
 
       assert {:error, :invalid_email} = RegisterUser.execute(params, context)
-      assert 0 == Blogs.Repo.aggregate(Blogs.User, :count)
+      assert 0 == Blogs.Repo.aggregate(User, :count)
 
       refute_event_published(UserRegistered)
     end

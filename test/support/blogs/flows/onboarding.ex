@@ -5,7 +5,7 @@ defmodule Blogs.Flows.Onboarding do
   alias Blogs.Commands.SendWelcomeEmail
   alias Blogs.Commands.EnableUser
 
-  alias Blogs.Onboarding
+  alias Blogs.Models.Onboarding
   alias Blogs.Values.UserId
   alias Blogs.Events.UserOnboarded
 

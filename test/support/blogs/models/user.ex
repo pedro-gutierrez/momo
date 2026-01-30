@@ -1,4 +1,4 @@
-defmodule Blogs.User do
+defmodule Blogs.Models.User do
   use Momo.Model
 
   model do
@@ -8,6 +8,6 @@ defmodule Blogs.User do
 
     unique fields: [:email]
 
-    has_many Blogs.Credential, preloaded: true
+    has_many Blogs.Models.Credential, preloaded: true
   end
 end

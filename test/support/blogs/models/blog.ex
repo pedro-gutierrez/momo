@@ -1,16 +1,14 @@
-defmodule Blogs.Blog do
+defmodule Blogs.Models.Blog do
   @moduledoc false
   use Momo.Model
-
-  alias Blogs.{Author, Post, Theme}
 
   model do
     attribute :name, kind: :string
     attribute :published, kind: :boolean, required: true, default: false
     attribute :public, kind: :boolean, required: false, default: false
-    belongs_to Author
-    belongs_to Theme, required: false
-    has_many Post
+    belongs_to Blogs.Models.Author
+    belongs_to Blogs.Models.Theme, required: false
+    has_many Blogs.Models.Post
     unique fields: [:author, :name]
   end
 end

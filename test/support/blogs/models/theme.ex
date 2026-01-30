@@ -1,11 +1,9 @@
-defmodule Blogs.Theme do
+defmodule Blogs.Models.Theme do
   @moduledoc false
   use Momo.Model
 
-  alias Blogs.Enums.Theme
-
   model do
-    attribute :name, kind: :string, in: Theme
+    attribute :name, kind: :string, in: Blogs.Enums.Theme
 
     unique fields: [:name] do
       on_conflict strategy: :merge

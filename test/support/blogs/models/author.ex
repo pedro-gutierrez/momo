@@ -1,12 +1,10 @@
-defmodule Blogs.Author do
+defmodule Blogs.Models.Author do
   @moduledoc false
   use Momo.Model
-
-  alias Blogs.Blog
 
   model do
     attribute :name, kind: :string
     attribute :profile, kind: :string, default: "publisher"
-    has_many Blog
+    has_many Blogs.Models.Blog
   end
 end

@@ -2,7 +2,7 @@ defmodule Blogs.Queries.GetUserByEmail do
   @moduledoc false
   use Momo.Query
 
-  alias Blogs.User
+  alias Blogs.Models.User
   alias Blogs.Values.UserEmail
 
   query params: UserEmail, returns: User do
