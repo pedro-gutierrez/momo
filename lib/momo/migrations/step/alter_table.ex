@@ -6,26 +6,23 @@ defmodule Momo.Migrations.Step.AlterTable do
 
   import Momo.Naming
 
-  defstruct [:table, :prefix, add: %{}, remove: %{}, modify: %{}]
+  defstruct [:table, add: %{}, remove: %{}, modify: %{}]
 
   @impl true
-  def decode({:alter, _, [{:table, _, [table, opts]}, [do: {:__block__, _, columns}]]})
+  def decode({:alter, _, [{:table, _, [table]}, [do: {:__block__, _, columns}]]})
       when is_list(columns) do
-    prefix = Keyword.fetch!(opts, :prefix)
     columns = columns |> Enum.map(&decode/1) |> Enum.reject(&is_nil/1)
-    new(table, prefix, columns)
+    new(table, columns)
   end
 
-  def decode({:alter, _, [{:table, _, [table, opts]}, [do: column]]}) do
-    prefix = Keyword.fetch!(opts, :prefix)
-
+  def decode({:alter, _, [{:table, _, [table]}, [do: column]]}) do
     columns =
       case decode(column) do
         nil -> []
         column -> [column]
       end
 
-    new(table, prefix, columns)
+    new(table, columns)
   end
 
   def decode({:add, _, col}), do: {:add, Column.new(col)}
@@ -35,14 +32,13 @@ defmodule Momo.Migrations.Step.AlterTable do
 
   @impl true
   def encode(step) do
-    opts = [prefix: step.prefix]
     add = step.add |> Map.values() |> Enum.map(&{:add, [line: 1], Column.encode(&1)})
     remove = step.remove |> Map.values() |> Enum.map(&{:remove, [line: 1], [&1.name]})
     modify = step.modify |> Map.values() |> Enum.map(&{:modify, [line: 1], Column.encode(&1)})
 
     {:alter, [line: 1],
      [
-       {:table, [line: 1], [step.table, opts]},
+       {:table, [line: 1], [step.table]},
        [do: {:__block__, [], add ++ remove ++ modify}]
      ]}
   end
@@ -51,17 +47,16 @@ defmodule Momo.Migrations.Step.AlterTable do
   def aggregate(step, state) do
     table =
       state
-      |> State.find!(step.prefix, :tables, step.table)
+      |> State.find!(:tables, step.table)
       |> apply_changes(step)
 
-    State.replace!(state, table.prefix, :tables, table)
+    State.replace!(state, :tables, table)
   end
 
   @impl true
   def diff(old_state, new_state) do
-    for {schema_name, schema} <- new_state.schemas,
-        {table_name, table} <- schema.tables do
-      with %Table{} = old_table <- State.find(old_state, schema_name, :tables, table_name) do
+    for {table_name, table} <- new_state.tables do
+      with %Table{} = old_table <- State.find(old_state, :tables, table_name) do
         diff_tables(old_table, table)
       else
         _ -> nil
@@ -76,7 +71,7 @@ defmodule Momo.Migrations.Step.AlterTable do
 
     case map_size(add) + map_size(remove) + map_size(modify) do
       0 -> nil
-      _ -> new(new_table.name, new_table.prefix, add, remove, modify)
+      _ -> new(new_table.name, add, remove, modify)
     end
   end
 
@@ -125,7 +120,7 @@ defmodule Momo.Migrations.Step.AlterTable do
   defp modified_columns(old_table, new_table) do
     new_columns = Map.keys(new_table.columns)
     old_columns = Map.keys(old_table.columns)
-    in_common = new_columns -- new_columns -- old_columns
+    in_common = new_columns -- (new_columns -- old_columns)
 
     in_common
     |> Enum.map(fn name ->
@@ -138,8 +133,8 @@ defmodule Momo.Migrations.Step.AlterTable do
     |> indexed()
   end
 
-  defp new(table, prefix, columns) do
-    step = %__MODULE__{table: table, prefix: prefix}
+  defp new(table, columns) do
+    step = %__MODULE__{table: table}
 
     Enum.reduce(columns, step, fn {bag, column}, step ->
       columns = step |> Map.get(bag) |> Map.put(column.name, column)
@@ -147,7 +142,7 @@ defmodule Momo.Migrations.Step.AlterTable do
     end)
   end
 
-  defp new(table, prefix, add, remove, modify) do
-    struct(__MODULE__, table: table, prefix: prefix, add: add, remove: remove, modify: modify)
+  defp new(table, add, remove, modify) do
+    struct(__MODULE__, table: table, add: add, remove: remove, modify: modify)
   end
 end

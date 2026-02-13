@@ -19,6 +19,7 @@ defmodule Momo.Query.Parser do
     many = Keyword.get(attrs, :many, false)
     debug = Keyword.get(attrs, :debug, false)
     custom = Keyword.get(attrs, :custom, false)
+    handler = Keyword.get(attrs, :handler)
 
     policies =
       for {:policy, attrs, _scopes} <- children do
@@ -50,6 +51,7 @@ defmodule Momo.Query.Parser do
       policies: policies,
       limit: limit,
       many: many,
+      handler: handler,
       custom: custom,
       sorting: sorting
     }

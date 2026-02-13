@@ -4,7 +4,6 @@ defmodule Momo.AppTest do
   alias Blogs.Values.UserEmail
   alias Blogs.Values.UserId
 
-
   describe "roles_from_context/1" do
     test "returns the roles from the context" do
       roles = [:admin]

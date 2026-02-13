@@ -4,15 +4,13 @@ defmodule Momo.Migrations.Migration do
   import Momo.Naming
 
   @mutations [
-    Momo.Migrations.Step.CreateSchema,
     Momo.Migrations.Step.CreateTable,
     Momo.Migrations.Step.AlterTable,
     Momo.Migrations.Step.CreateConstraint,
     Momo.Migrations.Step.CreateIndex,
     Momo.Migrations.Step.DropConstraint,
     Momo.Migrations.Step.DropIndex,
-    Momo.Migrations.Step.DropTable,
-    Momo.Migrations.Step.DropSchema
+    Momo.Migrations.Step.DropTable
   ]
 
   defstruct [

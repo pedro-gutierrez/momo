@@ -17,6 +17,7 @@ defmodule Momo.Model.Generator.Metadata do
     parent_field_names = Enum.map(parents, & &1.name)
     attribute_field_names = Enum.map(attributes, & &1.name)
     field_names = attribute_field_names ++ parent_field_names
+    relation_field_names = Enum.map(relations, & &1.name)
 
     quote location: :keep do
       @repo unquote(model.repo)
@@ -26,6 +27,7 @@ defmodule Momo.Model.Generator.Metadata do
       @parents unquote(Macro.escape(parents))
       @attribute_field_names unquote(attribute_field_names)
       @parent_field_names unquote(parent_field_names)
+      @relation_field_names unquote(relation_field_names)
       @field_names unquote(field_names)
       @children unquote(Macro.escape(children))
       @fields unquote(Macro.escape(fields))
@@ -50,6 +52,7 @@ defmodule Momo.Model.Generator.Metadata do
 
       def parent_field_names, do: @parent_field_names
       def attribute_field_names, do: @attribute_field_names
+      def relation_field_names, do: @relation_field_names
       def field_names, do: @field_names
 
       def field(name) when is_atom(name) do

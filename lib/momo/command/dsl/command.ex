@@ -8,6 +8,7 @@ defmodule Momo.Command.Dsl.Command do
     attribute :many, kind: :boolean, required: false, default: false
     attribute :atomic, kind: :boolean, required: false, default: false
     attribute :title, kind: :string, required: false
+    attribute :handler, kind: :module, required: true
 
     child :policy, min: 0
     child :publish, min: 0

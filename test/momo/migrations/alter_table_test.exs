@@ -18,7 +18,7 @@ defmodule Momo.Migrations.AlterTableTest do
       ]
       |> generate_migrations()
       |> assert_migrations([
-        "alter(table(:themes, prefix: nil)) do",
+        "alter(table(:themes)) do",
         "add(:id, :binary_id, primary_key: true, null: false)",
         "add(:name, :string, null: false)"
       ])
@@ -42,7 +42,7 @@ defmodule Momo.Migrations.AlterTableTest do
       ]
       |> generate_migrations()
       |> assert_migrations([
-        "alter(table(:themes, prefix: nil)) do",
+        "alter(table(:themes)) do",
         "remove(:closed)"
       ])
     end

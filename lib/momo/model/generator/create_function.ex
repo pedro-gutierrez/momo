@@ -63,18 +63,20 @@ defmodule Momo.Model.Generator.CreateFunction do
       def create_many(items, opts \\ []) when is_list(items) do
         opts = Keyword.merge(unquote(conflict_opts), opts)
         now = DateTime.utc_now()
+        unique_by = opts[:unique_by] || :id
 
         items =
-          for item <- items do
+          items
+          |> Enum.map(fn item ->
             item
-            |> Map.new()
-            |> atom_keys()
-            |> Map.put_new_lazy(:id, &Ecto.UUID.generate/0)
-            |> Map.put_new(:inserted_at, now)
-            |> Map.put_new(:updated_at, now)
-          end
+            |> batch_insert_changeset(opts)
+            |> apply_changes()
+            |> Map.from_struct()
+            |> Map.drop(@relation_field_names ++ [:__meta__])
+          end)
+          |> Enum.uniq_by(&Map.fetch!(&1, unique_by))
 
-        __MODULE__.app().repo().insert_all(__MODULE__, items, opts)
+        @repo.insert_all(__MODULE__, items, opts)
 
         :ok
       end

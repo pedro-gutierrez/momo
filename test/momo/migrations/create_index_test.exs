@@ -7,10 +7,10 @@ defmodule Momo.Migrations.CreateIndexTest do
       migration = generate_migrations()
 
       assert migration =~
-               "create(\n      unique_index(:blogs, [:author_id, :name], name: :blogs_author_id_name_idx, prefix: nil)"
+               "create(unique_index(:blogs, [:author_id, :name], name: :blogs_author_id_name_idx)"
 
       assert migration =~
-               "create(unique_index(:themes, [:name], name: :themes_name_idx, prefix: nil"
+               "create(unique_index(:themes, [:name], name: :themes_name_idx"
     end
   end
 end

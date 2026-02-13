@@ -5,7 +5,7 @@ defmodule Momo.Migrations.Index do
 
   @type t() :: %__MODULE__{}
 
-  defstruct [:name, :table, :prefix, columns: [], unique: false]
+  defstruct [:name, :table, columns: [], unique: false]
 
   def from_key(%Key{} = key) do
     table_name = key.model.table_name()

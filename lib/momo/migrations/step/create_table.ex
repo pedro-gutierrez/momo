@@ -11,18 +11,16 @@ defmodule Momo.Migrations.Step.CreateTable do
   defstruct [:table]
 
   @impl true
-  def decode({:create, _, [{:table, _, [name, opts]}, [do: {:__block__, _, columns}]]}) do
-    prefix = Keyword.fetch!(opts, :prefix)
+  def decode({:create, _, [{:table, _, [name, _opts]}, [do: {:__block__, _, columns}]]}) do
     columns = columns |> Column.decode() |> indexed()
-    table = %Table{name: name, prefix: prefix, columns: columns}
+    table = %Table{name: name, columns: columns}
 
     %__MODULE__{table: table}
   end
 
-  def decode({:create, _, [{:table, _, [name, opts]}, [do: column]]}) do
-    prefix = Keyword.fetch!(opts, :prefix)
+  def decode({:create, _, [{:table, _, [name, _opts]}, [do: column]]}) do
     columns = indexed([Column.decode(column)])
-    table = %Table{name: name, prefix: prefix, columns: columns}
+    table = %Table{name: name, columns: columns}
 
     %__MODULE__{table: table}
   end
@@ -31,7 +29,7 @@ defmodule Momo.Migrations.Step.CreateTable do
 
   @impl true
   def encode(%__MODULE__{} = step) do
-    opts = [prefix: step.table.prefix, primary_key: false]
+    opts = [primary_key: false]
 
     columns =
       step.table.columns
@@ -50,12 +48,12 @@ defmodule Momo.Migrations.Step.CreateTable do
   end
 
   @impl true
-  def aggregate(step, state), do: State.add!(state, step.table.prefix, :tables, step.table)
+  def aggregate(step, state), do: State.add!(state, :tables, step.table)
 
   @impl true
   def diff(old_state, new_state) do
-    for {schema_name, schema} <- new_state.schemas, {table_name, table} <- schema.tables do
-      if !State.has?(old_state, schema_name, :tables, table_name) do
+    for {table_name, table} <- new_state.tables do
+      if !State.has?(old_state, :tables, table_name) do
         %__MODULE__{table: table}
       else
         nil

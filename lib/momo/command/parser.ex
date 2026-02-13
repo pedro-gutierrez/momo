@@ -71,11 +71,13 @@ defmodule Momo.Command.Parser do
       |> String.to_atom()
 
     many = Keyword.get(attrs, :many, false)
+    handler = Keyword.fetch!(attrs, :handler)
 
     %Command{
       name: name,
       title: title,
       fun_name: fun_name,
+      handler: handler,
       app: app,
       params: params,
       returns: returns,

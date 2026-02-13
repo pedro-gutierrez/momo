@@ -5,8 +5,8 @@ defmodule Momo.Migrations.CreateTableTest do
   describe "migrations" do
     test "create tables in the right context" do
       migrations = generate_migrations()
-      assert migrations =~ "create(table(:blogs, prefix: nil"
-      assert migrations =~ "create(table(:users, prefix: nil"
+      assert migrations =~ "create(table(:blogs"
+      assert migrations =~ "create(table(:users"
     end
 
     test "do not create tables if they already exist in the context" do

@@ -9,6 +9,7 @@ defmodule Momo.Model.Generator.Changesets do
     [
       validate_changeset(model),
       insert_changeset(model),
+      batch_insert_changeset(model),
       update_changeset(model),
       delete_changeset(model)
     ]
@@ -45,6 +46,34 @@ defmodule Momo.Model.Generator.Changesets do
           model
           |> cast(attrs, @fields_on_insert)
           |> maybe_add_id()
+          |> validate_required(@required_fields)
+          |> unique_constraint([:id], name: unquote(primary_key_constraint))
+
+        unquote(computed_changes)
+        unquote_splicing(uuid_validations)
+        unquote_splicing(unique_constraints)
+        unquote_splicing(inclusion_validations)
+        unquote_splicing(parents_contraints)
+      end
+    end
+  end
+
+  defp batch_insert_changeset(model) do
+    primary_key_constraint = String.to_atom("#{model.plural}_pkey")
+    unique_constraints = unique_constraints(model)
+    inclusion_validations = inclusion_validations(model)
+    parents_contraints = parents_constraints(model)
+    uuid_validations = uuid_validations(model)
+    computed_changes = computed_changes(model)
+
+    quote location: :keep do
+      def batch_insert_changeset(attrs, opts) do
+        changes =
+          %__MODULE__{}
+          |> cast(attrs, @fields_on_insert)
+          |> maybe_add_id()
+          |> maybe_add_inserted_at()
+          |> maybe_add_updated_at()
           |> validate_required(@required_fields)
           |> unique_constraint([:id], name: unquote(primary_key_constraint))
 

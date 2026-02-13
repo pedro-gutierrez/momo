@@ -14,6 +14,7 @@ defmodule Momo.Query.Generator.Metadata do
       def custom?, do: unquote(query.custom)
       def many?, do: unquote(query.many)
       def debug?, do: unquote(query.debug)
+      def handler, do: unquote(query.handler)
     end
   end
 end

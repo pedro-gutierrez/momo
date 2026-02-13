@@ -1,4 +1,3 @@
-
 defmodule Blogs.Ui.Views.Admin do
   @moduledoc false
   use Momo.Ui.View

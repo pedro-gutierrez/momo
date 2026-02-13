@@ -31,16 +31,16 @@ defmodule Momo.Ui do
     ui
     |> namespaces()
     |> Enum.flat_map(fn ns ->
-       prefix = ns.path()
+      prefix = ns.path()
 
-       for route <- ns.routes() do
-         path = route.path()
-         method = route.method()
-         handler = Module.concat(route, Handler)
-         path = String.replace(prefix <> path, "//", "/")
+      for route <- ns.routes() do
+        path = route.path()
+        method = route.method()
+        handler = Module.concat(route, Handler)
+        path = String.replace(prefix <> path, "//", "/")
 
-         {method, path, handler}
-       end
+        {method, path, handler}
+      end
     end)
   end
 end

@@ -2,7 +2,8 @@ defmodule Momo.QueryTest do
   use Momo.DataCase
 
   alias Blogs.Models.{
-  Onboarding, User
+    Onboarding,
+    User
   }
 
   alias Blogs.Queries.{
@@ -12,7 +13,6 @@ defmodule Momo.QueryTest do
     GetUsersByEmails,
     GetUserIds
   }
-
 
   alias Blogs.Values.UserId
 
@@ -71,8 +71,9 @@ defmodule Momo.QueryTest do
 
   describe "execute/1" do
     test "is used when queries have no params" do
-      context = %{}
-      assert [item] = GetUserIds.execute(context)
+      assert [item] = GetUserIds.execute()
+
+      assert is_struct(item)
       assert item.user_id
     end
 
@@ -85,9 +86,7 @@ defmodule Momo.QueryTest do
           external_id: uuid()
         )
 
-      context = %{}
-
-      assert [] == GetUsers.execute(context)
+      assert [] == GetUsers.execute()
     end
 
     test "applies scopes" do
@@ -144,7 +143,6 @@ defmodule Momo.QueryTest do
       assert foo.email == "foo@bar"
     end
 
-
     test "returns an error if the item is not found" do
       params = %{"email" => "bar@bar"}
       context = %{current_user: %{roles: [:user]}}
@@ -160,8 +158,7 @@ defmodule Momo.QueryTest do
     end
 
     test "can execute custom queries on read models" do
-      context = %{}
-      assert [item] = GetUserIds.execute(context)
+      assert [item] = GetUserIds.execute()
 
       assert is_struct(item)
       assert item.__struct__ == UserId
@@ -171,9 +168,7 @@ defmodule Momo.QueryTest do
     test "sorts results" do
       assert {:ok, o1} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 1)
       assert {:ok, o2} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 3)
-      context = %{}
-
-      assert [^o2, ^o1] = GetOnboardings.execute(context)
+      assert [^o2, ^o1] = GetOnboardings.execute()
     end
 
     test "preloads associations by default" do
@@ -215,7 +210,6 @@ defmodule Momo.QueryTest do
       assert users = GetUsersByEmails.execute(params, context)
       assert length(users) == 2
     end
-
   end
 
   describe "apply_filters/2" do

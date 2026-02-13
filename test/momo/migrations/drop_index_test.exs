@@ -17,7 +17,7 @@ defmodule Momo.Migrations.DropIndexTest do
       ]
       |> generate_migrations()
       |> assert_migrations([
-        "drop_if_exists(index(:blogs, [], name: :blogs_id_name_idx, prefix: :publishing))"
+        "drop_if_exists(index(:blogs, [], name: :blogs_id_name_idx))"
       ])
     end
 

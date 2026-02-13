@@ -62,7 +62,6 @@ defmodule Momo.CommandTest do
       refute_event_published(UserRegistered)
     end
 
-
     test "can skip authorization" do
       params = %User{id: uuid(), email: "test@gmail.com", external_id: uuid()}
       context = %{authorization: :skip}
@@ -86,7 +85,7 @@ defmodule Momo.CommandTest do
       params = %User{email: "test@example.com", external_id: uuid(), id: uuid()}
       context = %{current_user: %{roles: [:guest]}}
 
-      assert {:ok, _user} =  RegisterUser.execute(params, context)
+      assert {:ok, _user} = RegisterUser.execute(params, context)
       refute_event_published(UserRegistered)
     end
 
@@ -107,6 +106,5 @@ defmodule Momo.CommandTest do
 
       refute_event_published(UserRegistered)
     end
-
   end
 end

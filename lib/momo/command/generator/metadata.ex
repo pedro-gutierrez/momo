@@ -6,6 +6,7 @@ defmodule Momo.Command.Generator.Metadata do
   def generate(command, _opts) do
     quote do
       def title, do: unquote(command.title)
+      def handler, do: unquote(command.handler)
       def fun_name, do: unquote(command.fun_name)
       def atomic?, do: unquote(command.atomic?)
       def params, do: unquote(command.params)

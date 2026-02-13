@@ -39,18 +39,15 @@ defmodule Momo.Command do
 
   def allowed?(command, context) do
     case command.app().roles_from_context(context) do
-      {:ok, []} ->
-        true
-
-      {:ok, roles} ->
-        allowed(roles, command.policies(), context)
-
-      _ ->
-        false
+      {:ok, roles} -> allowed?(roles, command.policies(), context)
+      {:error, _} -> false
     end
   end
 
-  defp allowed(roles, policies, context) do
+  defp allowed?([], _policies, _context), do: true
+  defp allowed?(_roles, policies, _context) when map_size(policies) == 0, do: true
+
+  defp allowed?(roles, policies, context) do
     policies =
       roles
       |> Enum.map(&Map.get(policies, &1))
@@ -98,8 +95,8 @@ defmodule Momo.Command do
          {:ok, result} <- handle(command, params, context),
          {:ok, events} <- events(command, result, context),
          :ok <- publish_events(command, events) do
-        {:ok, result}
-      end
+      {:ok, result}
+    end
   end
 
   defp authorize(_command, %{authorization: :skip}), do: :ok
@@ -113,7 +110,7 @@ defmodule Momo.Command do
   end
 
   defp handle(command, params, context) do
-    with :ok <- command.handle(params, context) do
+    with :ok <- command.handler().execute(params, context) do
       {:ok, params}
     end
   end

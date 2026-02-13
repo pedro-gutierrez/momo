@@ -48,14 +48,14 @@ defmodule Momo.Migrations do
 
   defp state_with_table(state, model) do
     table = Table.from_model(model)
-    State.add!(state, nil, :tables, table)
+    State.add!(state, :tables, table)
   end
 
   defp state_with_constraints(state, model) do
     model.parents()
     |> Enum.map(&Constraint.from_relation/1)
     |> Enum.reduce(state, fn constraint, state ->
-      State.add!(state, nil, :constraints, constraint)
+      State.add!(state, :constraints, constraint)
     end)
   end
 
@@ -63,7 +63,7 @@ defmodule Momo.Migrations do
     model.keys()
     |> Enum.map(&Index.from_key/1)
     |> Enum.reduce(state, fn index, state ->
-      State.add!(state, nil, :indexes, index)
+      State.add!(state, :indexes, index)
     end)
   end
 

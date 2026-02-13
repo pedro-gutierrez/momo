@@ -2,20 +2,21 @@ defmodule Momo.ModelTest do
   use Momo.DataCase
 
   alias Blogs
+
   alias Blogs.Models.{
-  Author,
- Blog,
- Digest,
- User,
- Theme,
- Onboarding,
- Credential}
+    Author,
+    Blog,
+    Digest,
+    User,
+    Theme,
+    Onboarding,
+    Credential
+  }
 
   alias Blogs.Queries.GetOnboardings
 
   describe "name/0" do
     test "return the atom representation of the model" do
-
       assert :blog == Blog.name()
     end
   end
@@ -33,15 +34,16 @@ defmodule Momo.ModelTest do
         assert {:ok, %Momo.Model.Attribute{} = ^attr} = Blog.field(attr.name)
       end
     end
-
   end
-
 
   describe "keys/0" do
     test "returns composite keys" do
       assert [key] = Blog.keys()
       assert Blog == key.model
-      assert [%Momo.Model.Relation{name: :author}, %Momo.Model.Attribute{name: :name}] = key.fields
+
+      assert [%Momo.Model.Relation{name: :author}, %Momo.Model.Attribute{name: :name}] =
+               key.fields
+
       assert key.unique?
     end
 
@@ -100,7 +102,6 @@ defmodule Momo.ModelTest do
       assert author.name == "john"
     end
 
-
     test "validates inclusion of attribute values" do
       attrs = %{
         "id" => Ecto.UUID.generate(),
@@ -125,8 +126,6 @@ defmodule Momo.ModelTest do
                id: ["is not a valid UUID"]
              }
     end
-
-
 
     test "allows timestamps to be manually modified" do
       two_days_ago = DateTime.utc_now() |> DateTime.add(-2 * 24 * 3600, :second)
@@ -236,17 +235,17 @@ defmodule Momo.ModelTest do
     test "merges records on conflict when the strategy is set" do
       user_id = uuid()
 
-      onboarding1 = [
+      onboarding1 = %{
         id: uuid(),
         user_id: user_id,
         steps_pending: 2
-      ]
+      }
 
-      onboarding2 = [
+      onboarding2 = %{
         id: uuid(),
         user_id: user_id,
         steps_pending: 3
-      ]
+      }
 
       assert :ok = Onboarding.create_many([onboarding1])
       assert :ok = Onboarding.create_many([onboarding2])

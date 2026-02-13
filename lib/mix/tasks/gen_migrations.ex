@@ -20,13 +20,12 @@ defmodule Mix.Tasks.Momo.Gen.Migrations do
     repo = Keyword.fetch!(config, :repo)
     app = Keyword.fetch!(config, :app)
     migrations_dir = Mix.EctoSQL.source_repo_priv(repo)
-    features = app.features()
 
     dir = Path.join([migrations_dir, "migrations"])
 
     dir
     |> Migrations.existing()
-    |> Migrations.missing(features)
+    |> Migrations.missing(app)
     |> case do
       %{steps: []} ->
         Mix.shell().info("No migrations to write")

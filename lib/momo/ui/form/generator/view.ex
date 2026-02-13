@@ -61,10 +61,10 @@ defmodule Momo.Ui.Form.Generator.View do
   defp type(_), do: "text"
 
   defp form_fields(field, form) do
-    cond do
-      field.in ->
+    case field do
+      %{in: enum} when not is_nil(enum) ->
         options =
-          for {label, value} <- field.in.options() do
+          for {label, value} <- enum.options() do
             {:option,
              [
                value: value,
@@ -74,7 +74,7 @@ defmodule Momo.Ui.Form.Generator.View do
 
         [{:select, [name: field.name], options}]
 
-      true ->
+      _ ->
         type = type(field.kind)
 
         [

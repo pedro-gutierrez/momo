@@ -4,7 +4,8 @@ defmodule Momo.Ui.Namespace do
     otp_app: :momo,
     dsl: Momo.Ui.Namespace.Dsl,
     generators: [
-      Momo.Ui.Namespace.Generator.Metadata
+      Momo.Ui.Namespace.Generator.Metadata,
+      Momo.Ui.Namespace.Generator.Router
     ]
 
   defstruct [:path, :routes]
