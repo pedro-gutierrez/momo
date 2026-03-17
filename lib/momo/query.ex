@@ -6,7 +6,6 @@ defmodule Momo.Query do
     parser: Momo.Query.Parser,
     generators: [
       Momo.Query.Generator.Execute,
-      Momo.Query.Generator.Handle,
       Momo.Query.Generator.Metadata,
       Momo.Query.Generator.Scope
     ]
@@ -15,7 +14,7 @@ defmodule Momo.Query do
 
   defstruct [
     :name,
-    :feature,
+    :app,
     :params,
     :sorting,
     :model,
@@ -23,7 +22,8 @@ defmodule Momo.Query do
     :limit,
     :many,
     :custom,
-    :debug
+    :debug,
+    :handler
   ]
 
   defmodule Policy do
@@ -61,7 +61,7 @@ defmodule Momo.Query do
     model = query.model()
 
     with false <- Enum.empty?(query.policies()),
-         {:ok, [_ | _] = roles} <- query.feature().app().roles_from_context(context) do
+         {:ok, [_ | _] = roles} <- query.app().roles_from_context(context) do
       scope(model, roles, query.policies(), context)
     else
       true -> model
@@ -101,30 +101,19 @@ defmodule Momo.Query do
 
     with {:ok, params} <- query.params().validate(params),
          context <- Map.put(context, :params, params) do
-      if query.custom?() do
-        params
-        |> query.handle(context)
-        |> maybe_map_result(query)
-        |> wrap_result()
-      else
-        context
-        |> query.scope()
-        |> apply_filters(query, params)
-        |> apply_preloads(query)
-        |> apply_sorting(query)
-        |> query.handle(params, context)
-        |> call_repo(query, context)
-      end
+      do_execute(query, params, context)
     end
   end
 
   @doc """
-  Executes the query that has no params
+  Executes the query with no params and just a context
   """
   def execute(query, context) do
-    if query.custom?() do
+    handler = query.handler()
+
+    if handler do
       context
-      |> query.handle()
+      |> handler.execute()
       |> maybe_map_result(query)
       |> wrap_result()
     else
@@ -132,7 +121,24 @@ defmodule Momo.Query do
       |> query.scope()
       |> apply_preloads(query)
       |> apply_sorting(query)
-      |> query.handle(context)
+      |> call_repo(query, context)
+    end
+  end
+
+  defp do_execute(query, params, context) do
+    handler = query.handler()
+
+    if handler do
+      params
+      |> handler.execute(context)
+      |> maybe_map_result(query)
+      |> wrap_result()
+    else
+      context
+      |> query.scope()
+      |> apply_filters(query, params)
+      |> apply_preloads(query)
+      |> apply_sorting(query)
       |> call_repo(query, context)
     end
   end
@@ -142,7 +148,7 @@ defmodule Momo.Query do
   defp params(params) when is_map(params), do: params
 
   defp call_repo(queriable, query, _context) do
-    repo = query.feature().repo()
+    repo = query.app().repo()
     Logger.debug("Executing query", query: query, computed: inspect(queriable))
 
     if query.many?() do
@@ -171,7 +177,7 @@ defmodule Momo.Query do
     if same_model?(item, model) do
       item
     else
-      with {:ok, mapped} <- query.feature().map(Map, model, item) do
+      with {:ok, mapped} <- query.app().map(Map, model, item) do
         mapped
       end
     end
@@ -188,7 +194,7 @@ defmodule Momo.Query do
   @doc """
   Builds a query by taking the parameters and adding them as filters
   """
-  def apply_filters(q, _query, params) do
+  def apply_filters(q, _query, params) when map_size(params) > 0 do
     filters =
       for {field, value} <- plain_map(params) do
         {field, :eq, value}
@@ -196,6 +202,8 @@ defmodule Momo.Query do
 
     Momo.QueryBuilder.filter(q, filters)
   end
+
+  def apply_filters(q, _query, _params), do: q
 
   @doc """
   Applies sorting to the query

@@ -27,7 +27,7 @@ defmodule Momo.Evaluate do
   end
 
   def evaluate(%{__struct__: model} = context, {:path, [:**, ancestor | rest]}) do
-    case model.feature().get_shortest_path(model.name(), ancestor) do
+    case model.app().get_shortest_path(model.name(), ancestor) do
       [] ->
         nil
 
@@ -105,7 +105,7 @@ defmodule Momo.Evaluate do
         key = {id, field}
 
         with nil <- Process.get(key) do
-          rel = context |> model.feature().repo().preload(field) |> Map.get(field)
+          rel = context |> model.app().repo().preload(field) |> Map.get(field)
           Process.put(key, rel)
           rel
         end

@@ -7,6 +7,7 @@ defmodule Momo.Query.Generator.Execute do
     quote do
       def execute(params, context), do: Momo.Query.execute(__MODULE__, params, context)
       def execute(context), do: Momo.Query.execute(__MODULE__, context)
+      def execute(), do: Momo.Query.execute(__MODULE__, %{})
     end
   end
 end

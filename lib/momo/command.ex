@@ -13,7 +13,7 @@ defmodule Momo.Command do
     :name,
     :title,
     :fun_name,
-    :feature,
+    :app,
     :params,
     :returns,
     :many,
@@ -24,6 +24,7 @@ defmodule Momo.Command do
     :path
   ]
 
+  require Logger
   import Momo.Maps
 
   defmodule Policy do
@@ -37,19 +38,16 @@ defmodule Momo.Command do
   end
 
   def allowed?(command, context) do
-    case command.feature().app().roles_from_context(context) do
-      {:ok, []} ->
-        true
-
-      {:ok, roles} ->
-        allowed(roles, command.policies(), context)
-
-      _ ->
-        false
+    case command.app().roles_from_context(context) do
+      {:ok, roles} -> allowed?(roles, command.policies(), context)
+      {:error, _} -> false
     end
   end
 
-  defp allowed(roles, policies, context) do
+  defp allowed?([], _policies, _context), do: true
+  defp allowed?(_roles, policies, _context) when map_size(policies) == 0, do: true
+
+  defp allowed?(roles, policies, context) do
     policies =
       roles
       |> Enum.map(&Map.get(policies, &1))
@@ -69,31 +67,61 @@ defmodule Momo.Command do
   end
 
   @doc """
-  Executes the given command
-
-  * `{:ok, term(), [events]}` - The command was executed successfully and returned a result, and a list of events
-  * `{:error, term()}` - The command failed to execute and the reason is provided.
+  Executes a command and publishes any events emitted
   """
   def execute(command, params, context) do
-    with {:ok, result} <- execute_command(command, params, context),
-         {:ok, events} <-
-           maybe_create_events(command.feature(), command.events(), result, context) do
-      {:ok, result, events}
+    if command.atomic?() do
+      repo = command.app().repo()
+
+      repo.transaction(fn ->
+        with {:error, reason} <- do_execute_command(command, params, context) do
+          repo.rollback(reason)
+        end
+      end)
+      |> then(fn
+        {:ok, {:ok, result}} -> {:ok, result}
+        {:ok, :ok} -> :ok
+        {:error, _} = error -> error
+      end)
+    else
+      do_execute_command(command, params, context)
     end
   end
 
-  defp execute_command(command, params, context) do
-    with :ok <- command.handle(params, context) do
+  defp do_execute_command(command, params, context) do
+    with {:ok, params} <- params |> plain_map() |> command.params().validate(),
+         context <- Map.put(context, :params, params),
+         :ok <- authorize(command, context),
+         {:ok, result} <- handle(command, params, context),
+         {:ok, events} <- events(command, result, context),
+         :ok <- publish_events(command, events) do
+      {:ok, result}
+    end
+  end
+
+  defp authorize(_command, %{authorization: :skip}), do: :ok
+
+  defp authorize(command, context) do
+    if allowed?(command, context) do
+      :ok
+    else
+      {:error, :unauthorized}
+    end
+  end
+
+  defp handle(command, params, context) do
+    with :ok <- command.handler().execute(params, context) do
       {:ok, params}
     end
   end
 
-  defp maybe_create_events(_feature, [], _result, _context), do: {:ok, []}
+  defp events(command, result, context) do
+    app = command.app()
+    events = command.events()
 
-  defp maybe_create_events(feature, events, result, context) when is_list(events) do
     with events when is_list(events) <-
            Enum.reduce_while(events, [], fn event, acc ->
-             case maybe_create_events(feature, event, result, context) do
+             case maybe_create_events(app, event, result, context) do
                nil -> {:cont, acc}
                {:ok, new_events} when is_list(new_events) -> {:cont, new_events ++ acc}
                {:ok, new_event} -> {:cont, [new_event | acc]}
@@ -103,10 +131,10 @@ defmodule Momo.Command do
          do: {:ok, Enum.reverse(events)}
   end
 
-  defp maybe_create_events(feature, event, result, context) when is_list(result) do
+  defp maybe_create_events(app, event, result, context) when is_list(result) do
     with events when is_list(events) <-
            Enum.reduce_while(result, [], fn item, acc ->
-             case maybe_create_event(feature, event, item, context) do
+             case maybe_create_event(app, event, item, context) do
                nil -> {:cont, acc}
                {:ok, event} -> {:cont, [event | acc]}
                {:error, reason} -> {:halt, {:error, reason}}
@@ -115,36 +143,61 @@ defmodule Momo.Command do
          do: {:ok, Enum.reverse(events)}
   end
 
-  defp maybe_create_events(feature, event, result, context) do
-    maybe_create_events(feature, event, [result], context)
+  defp maybe_create_events(app, event, result, context) do
+    maybe_create_events(app, event, [result], context)
   end
 
-  defp maybe_create_event(feature, event, result, context) do
+  defp maybe_create_event(app, event, result, context) do
     if_expr = event.if
     unless_expr = event.unless
 
-    maybe_create_event(feature, event, result, context, if_expr, unless_expr)
+    maybe_create_event(app, event, result, context, if_expr, unless_expr)
   end
 
-  defp maybe_create_event(feature, event, result, context, nil, nil),
-    do: create_event(feature, event, result, context)
+  defp maybe_create_event(app, event, result, context, nil, nil),
+    do: create_event(app, event, result, context)
 
-  defp maybe_create_event(feature, event, result, context, if_expr, nil) do
-    if if_expr.execute(result, context), do: create_event(feature, event, result, context)
+  defp maybe_create_event(app, event, result, context, if_expr, nil) do
+    if if_expr.execute(result, context), do: create_event(app, event, result, context)
   end
 
-  defp maybe_create_event(feature, event, result, context, nil, unless_expr) do
-    if not unless_expr.execute(result, context), do: create_event(feature, event, result, context)
+  defp maybe_create_event(app, event, result, context, nil, unless_expr) do
+    if not unless_expr.execute(result, context), do: create_event(app, event, result, context)
   end
 
-  defp maybe_create_event(feature, event, result, context, if_expr, unless_expr) do
+  defp maybe_create_event(app, event, result, context, if_expr, unless_expr) do
     if not unless_expr.execute(result, context) && if_expr.execute(result, context),
-      do: create_event(feature, event, result, context)
+      do: create_event(app, event, result, context)
   end
 
-  defp create_event(feature, event, result, context) do
+  defp create_event(app, event, result, context) do
     data = result |> plain_map() |> Map.merge(context)
 
-    feature.map(event.source, event.module, data)
+    app.map(event.source, event.module, data)
+  end
+
+  defp publish_events([], _feature), do: :ok
+
+  defp publish_events(command, events) do
+    app = command.app()
+
+    events
+    |> Enum.flat_map(&jobs(&1, app))
+    |> Momo.Job.schedule_all()
+
+    :ok
+  end
+
+  defp jobs(event, app) do
+    jobs =
+      app.subscriptions()
+      |> Enum.filter(&(&1.event() == event.__struct__))
+      |> Enum.map(&[event: event.__struct__, params: Jason.encode!(event), subscription: &1])
+
+    if jobs == [] do
+      Logger.warning("No subscriptions found for event", event: event.__struct__)
+    end
+
+    jobs
   end
 end

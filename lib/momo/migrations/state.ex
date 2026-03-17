@@ -1,106 +1,55 @@
 defmodule Momo.Migrations.State do
   @moduledoc """
-  Manages a set of schemas during migrations
+  Keeps tables, constraints and indexes of the same database schema together, during migration parsing and diffing
   """
-
-  alias Momo.Migrations.Schema
 
   @type t :: %__MODULE__{}
 
-  defstruct schemas: %{}
+  defstruct tables: %{}, constraints: %{}, indexes: %{}
 
   def new, do: %__MODULE__{}
 
-  def add_schema(state, name) do
-    schema = Schema.new(name)
-    schemas = Map.put(state.schemas, name, schema)
-
-    %{state | schemas: schemas}
+  def has?(schema, kind, name) do
+    schema
+    |> Map.fetch!(kind)
+    |> Map.has_key?(name)
   end
 
-  def remove_schema(state, name) do
-    schemas = Map.drop(state.schemas, [name])
-
-    %{state | schemas: schemas}
+  def find(schema, kind, name) do
+    schema
+    |> Map.fetch!(kind)
+    |> Map.get(name)
   end
 
-  def has_schema?(state, name), do: Map.has_key?(state.schemas, name)
+  def find!(schema, kind, name) do
+    schema
+    |> Map.fetch!(kind)
+    |> Map.fetch!(name)
+  end
 
-  def has?(state, schema, kind, name) do
-    case Map.get(state.schemas, schema) do
-      nil -> false
-      schema -> Schema.has?(schema, kind, name)
+  def add!(schema, kind, item) do
+    if has?(schema, kind, item.name) do
+      raise "Cannot add #{inspect(item)} into #{kind} of schema #{schema.name} (already exists)"
+    else
+      replace!(schema, kind, item)
     end
   end
 
-  def find(state, schema, kind, name) do
-    with_schema(state, schema, fn schema ->
-      Schema.find(schema, kind, name)
-    end)
-  end
-
-  def find!(state, schema, kind, name) do
-    with_schema!(state, schema, fn schema ->
-      Schema.find!(schema, kind, name)
-    end)
-  end
-
-  def add!(state, schema, kind, item) do
-    with_new_or_existing_schema(state, schema, fn schema ->
-      schema = Schema.add!(schema, kind, item)
-      schemas = Map.put(state.schemas, schema.name, schema)
-
-      %{state | schemas: schemas}
-    end)
-  end
-
-  def remove!(state, schema, kind, item) do
-    with_schema!(state, schema, fn schema ->
-      schema = Schema.remove!(schema, kind, item)
-      schemas = Map.put(state.schemas, schema.name, schema)
-
-      %{state | schemas: schemas}
-    end)
-  end
-
-  def replace!(state, schema, kind, item) do
-    with_schema!(state, schema, fn schema ->
-      schema = Schema.replace!(schema, kind, item)
-      schemas = Map.put(state.schemas, schema.name, schema)
-
-      %{state | schemas: schemas}
-    end)
-  end
-
-  defp with_schema!(state, schema, fun) do
-    case Map.get(state.schemas, schema) do
-      nil ->
-        schemas = state.schemas |> Map.keys() |> inspect()
-        schema = inspect(schema)
-        raise "No such schema #{schema} in #{schemas}"
-
-      schema ->
-        fun.(schema)
+  def remove!(schema, kind, item) do
+    if has?(schema, kind, item.name) do
+      items = schema |> Map.fetch!(kind) |> Map.drop([item.name])
+      Map.put(schema, kind, items)
+    else
+      raise "Cannot remove #{inspect(item)} from #{kind} of schema #{schema.name} (does not exist)"
     end
   end
 
-  defp with_new_or_existing_schema(state, schema, fun) do
-    case Map.get(state.schemas, schema) do
-      nil ->
-        state
-        |> add_schema(schema)
-        |> Map.fetch!(:schemas)
-        |> Map.fetch!(schema)
-        |> fun.()
+  def replace!(schema, kind, item) do
+    items =
+      schema
+      |> Map.fetch!(kind)
+      |> Map.put(item.name, item)
 
-      schema ->
-        fun.(schema)
-    end
-  end
-
-  defp with_schema(state, schema, fun) do
-    with %Schema{} = schema <- Map.get(state.schemas, schema) do
-      fun.(schema)
-    end
+    Map.put(schema, kind, items)
   end
 end

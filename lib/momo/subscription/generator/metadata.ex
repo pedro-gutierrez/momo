@@ -7,7 +7,7 @@ defmodule Momo.Subscription.Generator.Metadata do
     quote do
       def event, do: unquote(subscription.event)
       def action, do: unquote(subscription.action)
-      def feature, do: unquote(subscription.feature)
+      def app, do: unquote(subscription.app)
       def name, do: unquote(subscription.name)
     end
   end

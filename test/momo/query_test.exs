@@ -1,15 +1,20 @@
 defmodule Momo.QueryTest do
   use Momo.DataCase
 
-  alias Blogs.Accounts.User
+  alias Blogs.Models.{
+    Onboarding,
+    User
+  }
 
-  alias Blogs.Accounts.Queries.{
+  alias Blogs.Queries.{
     GetOnboardings,
     GetUsers,
     GetUserByEmail,
     GetUsersByEmails,
     GetUserIds
   }
+
+  alias Blogs.Values.UserId
 
   alias Momo.Query
 
@@ -66,9 +71,144 @@ defmodule Momo.QueryTest do
 
   describe "execute/1" do
     test "is used when queries have no params" do
-      context = %{}
-      assert [item] = GetUserIds.execute(context)
+      assert [item] = GetUserIds.execute()
+
+      assert is_struct(item)
       assert item.user_id
+    end
+
+    test "returns nothing, if no roles are present in the context" do
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      assert [] == GetUsers.execute()
+    end
+
+    test "applies scopes" do
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "bar@bar",
+          public: false,
+          external_id: uuid()
+        )
+
+      context = %{current_user: %{roles: [:guest]}}
+      assert [foo] = GetUsers.execute(context)
+      assert foo.email == "foo@bar"
+    end
+
+    test "return validation errors on invalid parameters" do
+      params = %{}
+      context = %{}
+
+      assert {:error, %Ecto.Changeset{} = errors} = GetUserByEmail.execute(params, context)
+      assert errors_on(errors) == %{email: ["can't be blank"]}
+    end
+
+    test "can returns a single item" do
+      {:ok, foo} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "bar@bar",
+          public: false,
+          external_id: uuid()
+        )
+
+      params = %{"email" => foo.email}
+      context = %{current_user: %{roles: [:user]}}
+
+      assert {:ok, foo} = GetUserByEmail.execute(params, context)
+      assert foo.email == "foo@bar"
+    end
+
+    test "returns an error if the item is not found" do
+      params = %{"email" => "bar@bar"}
+      context = %{current_user: %{roles: [:user]}}
+
+      assert {:error, :not_found} = GetUserByEmail.execute(params, context)
+    end
+
+    test "accept keyword lists as parameters" do
+      context = %{current_user: %{roles: [:user]}}
+      params = [email: "bar@bar"]
+
+      assert {:error, :not_found} = GetUserByEmail.execute(params, context)
+    end
+
+    test "can execute custom queries on read models" do
+      assert [item] = GetUserIds.execute()
+
+      assert is_struct(item)
+      assert item.__struct__ == UserId
+      assert item.user_id
+    end
+
+    test "sorts results" do
+      assert {:ok, o1} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 1)
+      assert {:ok, o2} = Onboarding.create(id: uuid(), user_id: uuid(), steps_pending: 3)
+      assert [^o2, ^o1] = GetOnboardings.execute()
+    end
+
+    test "preloads associations by default" do
+      {:ok, user} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      params = %{"email" => user.email}
+      context = %{current_user: %{roles: [:user]}}
+
+      assert {:ok, user} = GetUserByEmail.execute(params, context)
+      assert user.credentials == []
+    end
+
+    test "support lists of strings as parameters" do
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "foo@bar",
+          public: true,
+          external_id: uuid()
+        )
+
+      {:ok, _} =
+        User.create(
+          id: uuid(),
+          email: "bar@bar",
+          public: false,
+          external_id: uuid()
+        )
+
+      context = %{current_user: %{roles: [:user]}}
+      params = [email: ["foo@bar", "bar@bar"]]
+
+      assert users = GetUsersByEmails.execute(params, context)
+      assert length(users) == 2
     end
   end
 

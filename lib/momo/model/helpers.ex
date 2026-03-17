@@ -28,4 +28,22 @@ defmodule Momo.Model.Helpers do
       Ecto.Changeset.put_change(changeset, :id, Ecto.UUID.generate())
     end
   end
+
+  def maybe_add_inserted_at(changeset) do
+    if changed?(changeset, :inserted_at) do
+      changeset
+    else
+      now = DateTime.utc_now()
+      Ecto.Changeset.put_change(changeset, :inserted_at, now)
+    end
+  end
+
+  def maybe_add_updated_at(changeset) do
+    if changed?(changeset, :updated_at) do
+      changeset
+    else
+      now = DateTime.utc_now()
+      Ecto.Changeset.put_change(changeset, :updated_at, now)
+    end
+  end
 end

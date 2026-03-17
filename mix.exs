@@ -7,7 +7,8 @@ defmodule Momo.MixProject do
     [
       app: :momo,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.18",
+      aliases: aliases(),
       elixirc_paths: elixirc_paths(),
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
@@ -22,6 +23,12 @@ defmodule Momo.MixProject do
       ],
       deps: deps(),
       docs: docs()
+    ]
+  end
+
+  def aliases do
+    [
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 
@@ -41,8 +48,9 @@ defmodule Momo.MixProject do
       {:calendar, "~> 1.0"},
       {:diesel, "~> 0.8"},
       {:ecto, "~> 3.9"},
+      {:ecto_libsql, "~> 0.9"},
       {:ecto_sql, "~> 3.9"},
-      {:estree, "~> 2.7"},
+      {:uuidv7, "~> 1.0"},
       {:ex_doc, ">= 0.0.0"},
       {:file_system, "~> 1.0"},
       {:floki, "~> 0.34.0"},
@@ -50,8 +58,6 @@ defmodule Momo.MixProject do
       {:jason, "~> 1.2"},
       {:libgraph, "~> 0.16"},
       {:oban, "~> 2.18"},
-      {:paginator, "~> 1.2.0"},
-      {:postgrex, ">= 0.0.0"},
       {:predicator, "~> 3.3"},
       {:plug, "~> 1.14"},
       {:slugify, "~> 1.3"},

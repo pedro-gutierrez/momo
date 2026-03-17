@@ -9,6 +9,8 @@ defmodule Momo.Query.Dsl.Query do
     attribute :many, kind: :boolean, required: false, default: false
     attribute :custom, kind: :boolean, required: false, default: false
     attribute :debug, kind: :boolean, required: false, default: false
+    attribute :handler, kind: :module, required: false
+
     child :policy, min: 0
     child :sort, min: 0
   end

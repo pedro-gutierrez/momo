@@ -6,7 +6,7 @@ defmodule Momo.Command.Parser do
   alias Momo.Command.Policy
   alias Momo.Command.Event
 
-  import Momo.Feature.Naming
+  import Momo.Naming
 
   def parse({:command, attrs, children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
@@ -22,7 +22,7 @@ defmodule Momo.Command.Parser do
     title = attrs[:title] || default_title
 
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
 
     params = Keyword.fetch!(attrs, :params)
     returns = attrs[:returns] || params
@@ -47,7 +47,7 @@ defmodule Momo.Command.Parser do
         module_last = module |> Module.split() |> List.last() |> Macro.underscore()
         source_last = source |> Module.split() |> List.last() |> Macro.underscore()
         mapping = Macro.camelize("#{module_last}_from_#{source_last}")
-        mapping = Module.concat([feature, "Mappings", mapping])
+        mapping = Module.concat([app, "Mappings", mapping])
 
         if_expr = Keyword.get(attrs, :if)
         unless_expr = Keyword.get(attrs, :unless)
@@ -71,12 +71,14 @@ defmodule Momo.Command.Parser do
       |> String.to_atom()
 
     many = Keyword.get(attrs, :many, false)
+    handler = Keyword.fetch!(attrs, :handler)
 
     %Command{
       name: name,
       title: title,
       fun_name: fun_name,
-      feature: feature,
+      handler: handler,
+      app: app,
       params: params,
       returns: returns,
       many: many,

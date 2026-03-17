@@ -3,7 +3,7 @@ defmodule Momo.QueryBuilderTest do
 
   alias Momo.QueryBuilder
 
-  alias Blogs.Publishing.{Author, Blog, Post}
+  alias Blogs.Models.{Author, Blog, Post}
 
   import Ecto.Query
 
@@ -11,7 +11,7 @@ defmodule Momo.QueryBuilderTest do
 
   @select "SELECT p0.\"id\", p0.\"title\", p0.\"published_at\", p0.\"locked\", " <>
             "p0.\"published\", p0.\"deleted\", p0.\"blog_id\", p0.\"author_id\", p0.\"inserted_at\", " <>
-            "p0.\"updated_at\" FROM \"publishing\".\"posts\" AS p0"
+            "p0.\"updated_at\" FROM \"posts\" AS p0"
 
   test "supports no filters" do
     sql =
@@ -75,7 +75,7 @@ defmodule Momo.QueryBuilderTest do
       |> to_sql()
 
     assert sql ==
-             "SELECT p0.\"id\", p0.\"title\", p0.\"published_at\", p0.\"locked\", p0.\"published\", p0.\"deleted\", p0.\"blog_id\", p0.\"author_id\", p0.\"inserted_at\", p0.\"updated_at\" FROM \"publishing\".\"posts\" AS p0 WHERE (((p0.\"published\" = $1) AND (p0.\"locked\" = $2)) AND (p0.\"deleted\" = $3)) ORDER BY p0.\"id\", p0.\"inserted\" DESC"
+             "SELECT p0.\"id\", p0.\"title\", p0.\"published_at\", p0.\"locked\", p0.\"published\", p0.\"deleted\", p0.\"blog_id\", p0.\"author_id\", p0.\"inserted_at\", p0.\"updated_at\" FROM \"posts\" AS p0 WHERE (((p0.\"published\" = $1) AND (p0.\"locked\" = $2)) AND (p0.\"deleted\" = $3)) ORDER BY p0.\"id\", p0.\"inserted\" DESC"
   end
 
   test "combines 'and' and 'or'" do
@@ -148,8 +148,8 @@ defmodule Momo.QueryBuilderTest do
 
     assert sql ==
              @select <>
-               " INNER JOIN \"publishing\".\"blogs\" AS b1 ON p0.\"blog_id\" = b1.\"id\"" <>
-               " INNER JOIN \"publishing\".\"authors\" AS a2 ON b1.\"author_id\" = a2.\"id\""
+               " INNER JOIN \"blogs\" AS b1 ON p0.\"blog_id\" = b1.\"id\"" <>
+               " INNER JOIN \"authors\" AS a2 ON b1.\"author_id\" = a2.\"id\""
   end
 
   test "supports left joins" do
@@ -163,7 +163,7 @@ defmodule Momo.QueryBuilderTest do
 
     assert sql ==
              @select <>
-               " LEFT OUTER JOIN \"publishing\".\"blogs\" AS b1 ON p0.\"blog_id\" = b1.\"id\"" <>
-               " LEFT OUTER JOIN \"publishing\".\"authors\" AS a2 ON b1.\"author_id\" = a2.\"id\""
+               " LEFT OUTER JOIN \"blogs\" AS b1 ON p0.\"blog_id\" = b1.\"id\"" <>
+               " LEFT OUTER JOIN \"authors\" AS a2 ON b1.\"author_id\" = a2.\"id\""
   end
 end

@@ -1,8 +1,8 @@
 defmodule Momo.FlowTest do
   use Momo.DataCase
 
-  alias Blogs.Accounts.Flows.Onboarding
-  alias Blogs.Accounts.Values.UserId
+  alias Blogs.Flows.Onboarding
+  alias Blogs.Values.UserId
 
   describe "execute/2" do
     test "Creates a model entry and enqueues jobs" do

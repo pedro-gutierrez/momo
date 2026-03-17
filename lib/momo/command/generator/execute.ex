@@ -5,7 +5,8 @@ defmodule Momo.Command.Generator.Execute do
   @impl true
   def generate(_command, _opts) do
     quote do
-      def execute(params, context \\ %{}), do: Momo.Command.execute(__MODULE__, params, context)
+      def execute(params, context \\ %{authorization: :skip}),
+        do: Momo.Command.execute(__MODULE__, params, context)
     end
   end
 end

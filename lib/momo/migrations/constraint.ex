@@ -7,7 +7,6 @@ defmodule Momo.Migrations.Constraint do
   defstruct [
     :name,
     :table,
-    :prefix,
     :column,
     :target,
     type: :uuid,
@@ -19,7 +18,6 @@ defmodule Momo.Migrations.Constraint do
 
     new(
       table: rel.model.table_name(),
-      prefix: rel.model.feature().name(),
       column: rel.column_name,
       target: target_model.table_name(),
       type: target_model.primary_key().storage

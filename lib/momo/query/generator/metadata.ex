@@ -7,13 +7,14 @@ defmodule Momo.Query.Generator.Metadata do
     quote do
       def params, do: unquote(query.params)
       def model, do: unquote(query.model)
-      def feature, do: unquote(query.feature)
+      def app, do: unquote(query.app)
       def policies, do: unquote(Macro.escape(query.policies))
       def limit, do: unquote(query.limit)
       def sorting, do: unquote(Macro.escape(query.sorting))
       def custom?, do: unquote(query.custom)
       def many?, do: unquote(query.many)
       def debug?, do: unquote(query.debug)
+      def handler, do: unquote(query.handler)
     end
   end
 end

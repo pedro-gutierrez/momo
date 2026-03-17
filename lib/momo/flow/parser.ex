@@ -9,7 +9,7 @@ defmodule Momo.Flow.Parser do
 
   def parse({:flow, attrs, children}, opts) do
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
     model = Keyword.fetch!(attrs, :model)
     params = Keyword.get(attrs, :params, model)
     event = Keyword.fetch!(attrs, :publish)
@@ -25,7 +25,7 @@ defmodule Momo.Flow.Parser do
       |> List.flatten()
 
     %Flow{
-      feature: feature,
+      app: app,
       fun_name: fun_name,
       create_model_fun_name: create_model_fun_name,
       model: model,

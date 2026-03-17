@@ -17,7 +17,7 @@ defmodule Momo.Mapping do
     defstruct [:name, :expression]
   end
 
-  defstruct [:name, :feature, :from, :to, :fields]
+  defstruct [:name, :app, :from, :to, :fields]
 
   alias Momo.Evaluate
 

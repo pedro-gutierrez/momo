@@ -2,9 +2,9 @@ defmodule Blogs.Ui.Routes.Blog do
   @moduledoc false
   use Momo.Ui.Route
 
-  route "/blogs" do
+  route "/blogs/:id" do
     view Blogs.Ui.Views.Blog
-    view Blogs.Ui.Actions.BlogNotFound, for: "not_found"
+    view Blogs.Ui.Views.BlogNotFound, for: "not_found"
   end
 
   def execute(%{"id" => "1"}), do: %{"id" => "1", "name" => "Blog"}

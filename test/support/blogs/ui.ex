@@ -4,8 +4,8 @@ defmodule Blogs.Ui do
 
   ui do
     namespaces do
-      Blogs.Ui.Namespaces.Root
       Blogs.Ui.Namespaces.Admin
+      Blogs.Ui.Namespaces.Root
     end
   end
 end

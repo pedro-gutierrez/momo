@@ -9,8 +9,9 @@ defmodule Momo.Model.Generator.CreateFunction do
   def generate(model, _) do
     [
       with_defaults(),
-      with_map_args(model),
+      with_struct_args(model),
       with_keyword_args(model),
+      with_map_args(model),
       batch_fun(model)
     ]
   end
@@ -24,19 +25,19 @@ defmodule Momo.Model.Generator.CreateFunction do
   defp with_map_args(model) do
     conflict_opts = on_conflict_opts(model) || []
 
-    quote do
+    quote location: :keep do
       def create(attrs, opts) when is_map(attrs) do
         opts = Keyword.merge(unquote(conflict_opts), opts)
 
         %__MODULE__{}
         |> insert_changeset(attrs, opts)
-        |> unquote(model.feature).repo().insert(opts)
+        |> __MODULE__.app().repo().insert(opts)
       end
     end
   end
 
   defp with_keyword_args(_model) do
-    quote do
+    quote location: :keep do
       def create(attrs, opts) when is_list(attrs) do
         attrs
         |> Map.new()
@@ -45,25 +46,37 @@ defmodule Momo.Model.Generator.CreateFunction do
     end
   end
 
+  defp with_struct_args(_model) do
+    quote location: :keep do
+      def create(attrs, opts) when is_struct(attrs) do
+        attrs
+        |> Map.from_struct()
+        |> create(opts)
+      end
+    end
+  end
+
   defp batch_fun(model) do
     conflict_opts = on_conflict_opts(model) || []
 
-    quote do
+    quote location: :keep do
       def create_many(items, opts \\ []) when is_list(items) do
         opts = Keyword.merge(unquote(conflict_opts), opts)
         now = DateTime.utc_now()
+        unique_by = opts[:unique_by] || :id
 
         items =
-          for item <- items do
+          items
+          |> Enum.map(fn item ->
             item
-            |> Map.new()
-            |> atom_keys()
-            |> Map.put_new_lazy(:id, &Ecto.UUID.generate/0)
-            |> Map.put_new(:inserted_at, now)
-            |> Map.put_new(:updated_at, now)
-          end
+            |> batch_insert_changeset(opts)
+            |> apply_changes()
+            |> Map.from_struct()
+            |> Map.drop(@relation_field_names ++ [:__meta__])
+          end)
+          |> Enum.uniq_by(&Map.fetch!(&1, unique_by))
 
-        unquote(model.feature).repo().insert_all(__MODULE__, items, opts)
+        @repo.insert_all(__MODULE__, items, opts)
 
         :ok
       end

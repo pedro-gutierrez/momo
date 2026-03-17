@@ -14,11 +14,20 @@ defmodule Momo.App.Generator.Application do
       @otp_app unquote(otp_app)
       @repos unquote(app.repos)
       @endpoints unquote(app.endpoints)
-      @features unquote(app.features)
+
       @migrate __MODULE__.Migrate
 
       def repos, do: @repos
-      def features, do: @features
+      def repo, do: hd(@repos)
+      def models, do: unquote(app.models)
+      def commands, do: unquote(app.commands)
+      def queries, do: unquote(app.queries)
+      def events, do: unquote(app.events)
+      def flows, do: unquote(app.flows)
+      def subscriptions, do: unquote(app.subscriptions)
+      def mappings, do: unquote(app.mappings)
+      def values, do: unquote(app.values)
+      def scopes, do: unquote(app.scopes)
 
       @impl true
       def start(_type, _args) do

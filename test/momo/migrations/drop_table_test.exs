@@ -18,7 +18,7 @@ defmodule Momo.Migrations.DropTableTest do
       ]
 
       migrations = generate_migrations(existing)
-      assert migrations =~ "drop_if_exists(table(:emails, prefix: :notifications"
+      assert migrations =~ "drop_if_exists(table(:emails"
     end
   end
 end

@@ -19,7 +19,7 @@ defmodule Momo.Event do
     defstruct [:name, :type, :many, :required, :default, :allowed_values]
   end
 
-  defstruct [:name, :version, :fields, :feature]
+  defstruct [:name, :version, :fields, :app]
 
   import Ecto.Changeset
 

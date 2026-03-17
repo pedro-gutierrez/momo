@@ -15,7 +15,6 @@ defmodule Momo.Migrations.Table do
   @timestamps [:inserted_at, :updated_at]
 
   def from_model(model) do
-    prefix = model.feature().name()
     table_name = model.table_name()
 
     attribute_columns =
@@ -27,7 +26,7 @@ defmodule Momo.Migrations.Table do
 
     columns = indexed(attribute_columns ++ parent_columns)
 
-    %__MODULE__{name: table_name, prefix: prefix, columns: columns}
+    %__MODULE__{name: table_name, prefix: nil, columns: columns}
   end
 
   def column!(table, name) do

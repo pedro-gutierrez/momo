@@ -3,9 +3,10 @@ defmodule Momo.Migrations.CreateSchemaTest do
   import MigrationHelper
 
   describe "migrations" do
-    test "create schemas for new features" do
+    test "create tables without schema prefixes" do
       migration = generate_migrations()
-      assert migration =~ "execute(\"CREATE SCHEMA accounts\")"
+      assert migration =~ "create(table(:users, primary_key: false))"
+      assert migration =~ "create(table(:credentials, primary_key: false))"
     end
   end
 end

@@ -13,8 +13,12 @@ defmodule Momo.Ui.Form.Generator.Route do
          {:view, [name: view, for: "default"], []}
        ]}
 
+    route_module = Module.concat(caller, Route)
+
+    IO.inspect(route_module: route_module)
+
     quote do
-      defmodule Route do
+      defmodule unquote(route_module) do
         use Momo.Ui.Route
 
         @definition unquote(Macro.escape(definition))

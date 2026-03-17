@@ -18,7 +18,7 @@ defmodule Momo.Model.Generator.FetchFunction do
   defp fetch_function(model) do
     preloads = default_preloads(model)
 
-    quote do
+    quote location: :keep do
       def fetch(id, opts \\ []) do
         preload = Keyword.get(opts, :preload, unquote(preloads))
 

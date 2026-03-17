@@ -4,19 +4,19 @@ defmodule Momo.Subscription.Parser do
 
   alias Momo.Subscription
 
-  import Momo.Feature.Naming
+  import Momo.Naming
 
   def parse({:subscription, attrs, _children}, opts) do
     name = Keyword.fetch!(opts, :caller_module)
     caller = Keyword.fetch!(opts, :caller_module)
-    feature = feature_module(caller)
+    app = app(caller)
 
     event = Keyword.fetch!(attrs, :on)
     action = Keyword.get(attrs, :perform)
 
     %Subscription{
       name: name,
-      feature: feature,
+      app: app,
       event: event,
       action: action
     }

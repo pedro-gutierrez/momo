@@ -1,8 +1,8 @@
 defmodule Momo.EventTest do
   use ExUnit.Case
 
-  alias Blogs.Accounts.Events.UserRegistered
-  alias Blogs.Accounts.Events.UsersLocked
+  alias Blogs.Events.UserRegistered
+  alias Blogs.Events.UsersLocked
 
   describe "new/1" do
     test "creates event with valid required data" do

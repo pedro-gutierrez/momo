@@ -10,15 +10,13 @@ defmodule Momo.Migrations.Step.CreateConstraint do
   def decode(
         {:alter, _,
          [
-           {:table, _, [table, table_opts]},
+           {:table, _, [table]},
            [do: {:modify, _, [column, {:references, _, [other, opts]}]}]
          ]}
       ) do
-    prefix = Keyword.fetch!(table_opts, :prefix)
-
     constraint =
       opts
-      |> Keyword.merge(table: table, prefix: prefix, column: column, target: other)
+      |> Keyword.merge(table: table, column: column, target: other)
       |> Constraint.new()
 
     %__MODULE__{constraint: constraint}
@@ -28,11 +26,9 @@ defmodule Momo.Migrations.Step.CreateConstraint do
 
   @impl true
   def encode(step) do
-    opts = [prefix: step.constraint.prefix]
-
     {:alter, [line: 1],
      [
-       {:table, [line: 1], [step.constraint.table, opts]},
+       {:table, [line: 1], [step.constraint.table]},
        [
          do:
            {:modify, [line: 1],
@@ -53,13 +49,12 @@ defmodule Momo.Migrations.Step.CreateConstraint do
 
   @impl true
   def aggregate(step, state),
-    do: State.add!(state, step.constraint.prefix, :constraints, step.constraint)
+    do: State.add!(state, :constraints, step.constraint)
 
   @impl true
   def diff(old_state, new_state) do
-    for {schema_name, schema} <- new_state.schemas,
-        {constraint_name, constraint} <- schema.constraints do
-      if !State.has?(old_state, schema_name, :constraints, constraint_name) do
+    for {constraint_name, constraint} <- new_state.constraints do
+      if !State.has?(old_state, :constraints, constraint_name) do
         %__MODULE__{constraint: constraint}
       else
         nil

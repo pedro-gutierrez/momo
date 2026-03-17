@@ -1,9 +1,8 @@
 defmodule Momo.ScopeTest do
   use ExUnit.Case
 
-  alias Blogs.Accounts.Scopes.SelfAndNotLocked
-  alias Blogs.Publishing.{Blog, Post, Comment, Author}
-
+  alias Blogs.Scopes.SelfAndNotLocked
+  alias Blogs.Models.{Blog, Post, Comment, Author}
   alias Momo.Scope
   alias Momo.Scope.Expression
 
@@ -12,7 +11,7 @@ defmodule Momo.ScopeTest do
 
     scope do
       same do
-        path "published"
+        path("published")
         true
       end
     end
@@ -23,7 +22,7 @@ defmodule Momo.ScopeTest do
 
     scope do
       same do
-        path "**.published"
+        path("**.published")
         true
       end
     end
@@ -34,7 +33,7 @@ defmodule Momo.ScopeTest do
 
     scope do
       is_true do
-        path "published"
+        path("published")
       end
     end
   end
@@ -44,7 +43,7 @@ defmodule Momo.ScopeTest do
 
     scope do
       is_true do
-        path "locked"
+        path("locked")
       end
     end
   end
@@ -240,7 +239,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "blog.published"
+          path("blog.published")
           true
         end
       end
@@ -249,7 +248,7 @@ defmodule Momo.ScopeTest do
     builder = Scope.query_builder(Post, IsBlogPublished)
 
     assert builder.joins == [
-             {:join, {Blogs.Publishing.Blog, :post_blog, :id}, {:post, :blog_id}}
+             {:join, {Blogs.Models.Blog, :post_blog, :id}, {:post, :blog_id}}
            ]
 
     assert builder.filters == [{{:post_blog, :published}, :eq, true}]
@@ -261,7 +260,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "blog.theme.name"
+          path("blog.theme.name")
           "Science"
         end
       end
@@ -271,8 +270,7 @@ defmodule Momo.ScopeTest do
 
     assert builder.joins == [
              {:join, {Blog, :post_blog, :id}, {:post, :blog_id}},
-             {:left_join, {Blogs.Publishing.Theme, :post_blog_theme, :id},
-              {:post_blog, :theme_id}}
+             {:left_join, {Blogs.Models.Theme, :post_blog_theme, :id}, {:post_blog, :theme_id}}
            ]
 
     assert builder.filters == [{{:post_blog_theme, :name}, :eq, "Science"}]
@@ -284,7 +282,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "blog.author.name"
+          path("blog.author.name")
           "John"
         end
       end
@@ -306,7 +304,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "post.author.name"
+          path("post.author.name")
           "John"
         end
       end
@@ -317,7 +315,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "post.blog.author.name"
+          path("post.blog.author.name")
           "John"
         end
       end
@@ -358,7 +356,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "blog"
+          path("blog")
           1
         end
       end
@@ -374,7 +372,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "posts"
+          path("posts")
           1
         end
       end
@@ -395,7 +393,7 @@ defmodule Momo.ScopeTest do
 
       scope do
         same do
-          path "posts.published"
+          path("posts.published")
           true
         end
       end

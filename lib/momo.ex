@@ -6,7 +6,6 @@ defmodule Momo do
   """
 
   @dsls [
-    Momo.Feature.Dsl,
     Momo.Command.Dsl,
     Momo.Model.Dsl,
     Momo.Query.Dsl,

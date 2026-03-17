@@ -12,13 +12,11 @@ defmodule Momo.Subscription do
       Momo.Subscription.Generator.Execute
     ]
 
-  defstruct [:name, :feature, :event, :action]
+  defstruct [:name, :app, :event, :action]
 
   def execute(subscription, params) do
     params = Map.from_struct(params)
-    feature = subscription.feature()
-    fun = subscription.action().fun_name()
-
-    apply(feature, fun, [params])
+    command = subscription.action()
+    command.execute(params, %{authorization: :skip})
   end
 end
